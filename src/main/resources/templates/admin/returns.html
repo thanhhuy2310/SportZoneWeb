@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Returns | SportZone Admin</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+<body class="adminx-body">
+<div class="adminx-shell">
+    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+
+    <main class="adminx-main">
+        <div class="adminx-top">
+            <div>
+                <p class="adminx-kicker">ADMIN PANEL</p>
+                <h1>Returns</h1>
+                <span>Manage return and exchange requests</span>
+            </div>
+        </div>
+
+        <div class="alert-success" th:if="${param.approved}">Yêu cầu đổi trả đã được duyệt.</div>
+        <div class="alert-error" th:if="${param.rejected}">Yêu cầu đổi trả đã bị từ chối.</div>
+
+        <section class="adminx-panel">
+            <div class="adminx-panel-head">
+                <h2>Return Requests</h2>
+                <span th:text="${returns != null ? returns.size() + ' requests' : '0 requests'}">0 requests</span>
+            </div>
+
+            <div class="adminx-table-wrap">
+                <table class="adminx-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r : ${returns}">
+                        <td th:text="${'#' + r.maDT}">#1</td>
+                        <td>
+                            <strong th:text="${r.donHang != null ? 'ORDER #' + r.donHang.maDH : 'N/A'}">ORDER #1</strong>
+                            <small th:if="${r.donHang != null}" th:text="${'$' + #numbers.formatDecimal(r.donHang.tongTien / 26000,1,'COMMA',2,'POINT')}">$0.00</small>
+                        </td>
+                        <td th:text="${r.nguoiDung != null ? r.nguoiDung.hoTen : 'Customer'}">Customer</td>
+                        <td th:text="${r.lyDo}">Reason</td>
+                        <td><span class="adminx-badge" th:text="${r.trangThai}">Requested</span></td>
+                        <td th:text="${r.ngayYeuCau != null ? #temporals.format(r.ngayYeuCau,'dd/MM/yyyy HH:mm') : ''}">Date</td>
+                        <td>
+                            <div class="admin-order-actions">
+                                <a class="admin-action-btn done" th:if="${r.trangThai == 'Requested'}" th:href="@{/admin/returns/approve/{id}(id=${r.maDT})}">Approve</a>
+                                <a class="admin-action-btn cancel" th:if="${r.trangThai == 'Requested'}" th:href="@{/admin/returns/reject/{id}(id=${r.maDT})}">Reject</a>
+                                <span th:if="${r.trangThai != 'Requested'}" th:text="${r.trangThai}">Done</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${returns == null or returns.isEmpty()}">
+                        <td colspan="7"><div class="adminx-empty">No return requests found.</div></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

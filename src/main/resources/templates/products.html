@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Sneakers - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-shop-hero">
+    <div class="sz-container">
+        <div class="sz-breadcrumb">
+            Home / <span>All Sneakers</span>
+        </div>
+
+        <div class="sz-kicker">
+            Shop Collection
+        </div>
+
+        <h1 class="sz-page-title">
+            All Sneakers
+        </h1>
+
+        <p class="sz-shop-count">
+                <span th:text="${products != null ? products.size() : 0}">
+                    0
+                </span>
+            products found
+        </p>
+    </div>
+</section>
+
+<section class="sz-section sz-shop-section">
+    <div class="sz-container sz-shop-layout">
+        <aside class="sz-filter-panel">
+            <form th:action="@{/products}" method="get">
+                <div class="sz-filter-search">
+                    <input type="text"
+                           name="q"
+                           th:value="${q}"
+                           placeholder="Search products...">
+                </div>
+
+                <div class="sz-filter-group">
+                    <h3>Brand</h3>
+
+                    <a th:href="@{/products(category=${selectedCategory},size=${selectedSize},sale=${sale})}"
+                       th:classappend="${selectedBrand == null} ? 'active'">
+                        All Brands
+                    </a>
+
+                    <a th:each="b : ${navBrands}"
+                       th:href="@{/products(brand=${b.maTH},category=${selectedCategory},size=${selectedSize},sale=${sale})}"
+                       th:classappend="${selectedBrand == b.maTH} ? 'active'"
+                       th:text="${b.tenTH}">
+                        Nike
+                    </a>
+                </div>
+
+                <div class="sz-filter-group">
+                    <h3>Category</h3>
+
+                    <a th:href="@{/products(brand=${selectedBrand},size=${selectedSize},sale=${sale})}"
+                       th:classappend="${selectedCategory == null} ? 'active'">
+                        All Categories
+                    </a>
+
+                    <a th:each="c : ${navCategories}"
+                       th:href="@{/products(category=${c.maLoai},brand=${selectedBrand},size=${selectedSize},sale=${sale})}"
+                       th:classappend="${selectedCategory == c.maLoai} ? 'active'"
+                       th:text="${c.tenLoai}">
+                        Running
+                    </a>
+                </div>
+
+                <div class="sz-filter-group">
+                    <h3>Size</h3>
+
+                    <div class="sz-size-grid">
+                        <a th:each="s : ${allSizes}"
+                           th:href="@{/products(size=${s.maSize},brand=${selectedBrand},category=${selectedCategory},sale=${sale})}"
+                           th:classappend="${selectedSize == s.maSize} ? 'active'"
+                           th:text="${s.tenSize}">
+                            40
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sz-filter-actions">
+                    <button class="sz-btn" type="submit">
+                        Search
+                    </button>
+
+                    <a class="sz-btn dark" th:href="@{/products}">
+                        Clear
+                    </a>
+                </div>
+            </form>
+        </aside>
+
+        <main class="sz-shop-main">
+            <div class="sz-shop-toolbar">
+                <button type="button" class="sz-toolbar-btn">
+                    Hide Filters
+                </button>
+
+                <select class="sz-select-mini">
+                    <option>Featured</option>
+                    <option>Newest</option>
+                    <option>Price Low to High</option>
+                </select>
+            </div>
+
+            <div class="sz-empty"
+                 th:if="${products == null or products.isEmpty()}">
+                <h2>No products found</h2>
+                <p>Try changing brand, category or size filter.</p>
+            </div>
+
+            <div class="sz-product-grid"
+                 th:if="${products != null and !products.isEmpty()}">
+                <div th:each="sp : ${products}">
+                    <div th:replace="~{fragments/product-card :: card(sp=${sp})}"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

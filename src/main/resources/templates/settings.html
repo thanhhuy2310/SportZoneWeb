@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-section">
+    <div class="sz-container">
+        <h1 class="sz-page-title">SETTINGS</h1>
+
+        <div class="sz-checkout-box">
+            <h2 class="sz-section-title">Account Settings</h2>
+
+            <div class="sz-summary-row">
+                <span>Account</span>
+                <strong th:text="${loginUser.hoTen}">User</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Email</span>
+                <strong th:text="${loginUser.email}">user@gmail.com</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Role</span>
+                <strong th:text="${loginUser.vaiTro}">USER</strong>
+            </div>
+
+            <a class="sz-btn" th:href="@{/profile/edit}">
+                EDIT PROFILE →
+            </a>
+
+            <a class="sz-btn dark" th:href="@{/profile}">
+                BACK TO PROFILE
+            </a>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

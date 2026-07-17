@@ -1,0 +1,21 @@
+<aside th:fragment="adminSidebar" class="adminx-sidebar">
+    <a class="adminx-logo" th:href="@{/admin}">
+        <span>SZ</span>
+        <strong>SPORTZONE</strong>
+    </a>
+
+    <nav class="adminx-menu">
+        <a th:href="@{/admin}"><span>▦</span>Dashboard</a>
+        <a th:href="@{/admin/products}"><span>◈</span>Products</a>
+        <a th:href="@{/admin/brands}"><span>◆</span>Brands</a>
+        <a th:href="@{/admin/categories}"><span>◇</span>Categories</a>
+        <a th:href="@{/admin/orders}"><span>▣</span>Orders</a>
+        <a th:href="@{/admin/returns}"><span>↺</span>Returns</a>
+        <a th:href="@{/admin/customers}"><span>◎</span>Customers</a>
+        <a th:href="@{/admin/contacts}"><span>✉</span>Contacts</a>
+    </nav>
+
+    <a class="adminx-back" th:href="@{/}">
+        ← Back to Store
+    </a>
+</aside>

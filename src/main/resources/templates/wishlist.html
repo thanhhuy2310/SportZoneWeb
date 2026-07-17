@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-page-hero">
+    <div class="sz-container">
+        <div class="sz-breadcrumb">
+            Home&nbsp;&nbsp;/&nbsp;&nbsp;<span>Wishlist</span>
+        </div>
+
+        <h1 class="sz-page-title">
+            Wishlist
+        </h1>
+
+        <div class="sz-page-sub"
+             th:text="${products != null ? products.size() + ' products saved' : '0 products saved'}">
+            0 products saved
+        </div>
+    </div>
+</section>
+
+<section class="sz-section">
+    <div class="sz-container">
+
+        <div class="empty-state"
+             th:if="${products == null or products.isEmpty()}">
+            <h2>Your wishlist is empty</h2>
+
+            <p>
+                Save your favorite sneakers and come back later.
+            </p>
+
+            <a class="sz-btn" th:href="@{/products}">
+                Start Shopping →
+            </a>
+        </div>
+
+        <div class="sz-shop-layout"
+             th:if="${products != null and !products.isEmpty()}">
+
+            <aside class="sz-filter-panel">
+                <div class="sz-search-box">
+                    <span>⌕</span>
+                    <input placeholder="Search wishlist...">
+                </div>
+
+                <div class="sz-filter-group">
+                    <div class="sz-filter-title">
+                        <span>Brand</span>
+                        <span>⌃</span>
+                    </div>
+
+                    <a class="sz-check-link"
+                       th:each="brand : ${navBrands}"
+                       th:href="@{/products(brand=${brand.maTH})}">
+                        <span class="sz-check-box"></span>
+
+                        <span th:text="${brand.tenTH}">
+                                Nike
+                            </span>
+
+                        <small>♡</small>
+                    </a>
+                </div>
+            </aside>
+
+            <main>
+                <div class="sz-product-grid">
+                    <div th:each="sp : ${products}">
+                        <div th:replace="~{fragments/product-card :: card(sp=${sp})}"></div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

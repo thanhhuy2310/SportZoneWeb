@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="sz-container">
+    <section class="sz-profile-head">
+        <div class="sz-avatar"
+             th:text="${loginUser != null and loginUser.hoTen != null ? #strings.substring(loginUser.hoTen,0,1) : 'U'}">
+            U
+        </div>
+
+        <div>
+            <h1 th:text="${loginUser != null ? loginUser.hoTen : 'User'}">User</h1>
+            <p th:text="${loginUser != null ? loginUser.email : 'user@gmail.com'}">user@gmail.com</p>
+
+            <div class="sz-kicker">
+                My Account · <span th:text="${orders != null ? orders.size() : 0}">0</span> orders
+            </div>
+        </div>
+    </section>
+
+    <nav class="sz-profile-menu">
+        <a class="active" th:href="@{/profile}">▱ My Orders <span>›</span></a>
+        <a th:href="@{/profile/edit}">♙ Profile <span>›</span></a>
+        <a th:href="@{/settings}">⚙ Settings <span>›</span></a>
+        <a th:href="@{/logout}">↪ Sign Out <span>›</span></a>
+    </nav>
+
+    <section class="sz-section" style="padding-top: 0;">
+        <h2 class="sz-section-title">My Orders</h2>
+
+        <div th:if="${param.ordered}" class="alert-success">
+            Đặt hàng thành công. Đơn hàng của bạn đã được lưu vào hệ thống.
+        </div>
+
+        <div th:if="${param.updated}" class="alert-success">
+            Cập nhật thông tin cá nhân thành công.
+        </div>
+
+        <div th:if="${param.returnRequested}" class="alert-success">
+            Yêu cầu đổi trả đã được gửi cho quản trị viên.
+        </div>
+
+        <div th:if="${param.returnError}" class="alert-error">
+            Không thể gửi yêu cầu đổi trả cho đơn hàng này.
+        </div>
+
+        <div th:if="${orders == null or orders.isEmpty()}" class="sz-panel" style="margin-top: 30px;">
+            <p>No orders yet.</p>
+            <a class="sz-btn" th:href="@{/products}">Shop Now →</a>
+        </div>
+
+        <article class="sz-order-card" th:each="order : ${orders}">
+            <div class="sz-order-line">
+                <div>
+                    <h3 th:text="${'ORDER #' + order.maDH}">ORDER #1</h3>
+                    <p th:if="${order.ngayDat != null}"
+                       th:text="${#temporals.format(order.ngayDat, 'dd/MM/yyyy HH:mm')}">
+                        08/06/2026 15:00
+                    </p>
+                    <p th:if="${order.ngayDat == null}">No date</p>
+                </div>
+
+                <span class="sz-status" th:text="${order.trangThaiDonHang}">Pending</span>
+            </div>
+
+            <div class="sz-order-line" style="margin-top: 20px;">
+                <div class="sz-order-product">
+                    <img src="https://images.unsplash.com/photo-1656057903797-175389ce695d?w=200&h=200&fit=crop&auto=format" alt="Order">
+
+                    <div>
+                        <strong>SportZone Order</strong>
+                        <p>Receiver: <span th:text="${order.hoTenNhan}">Customer</span></p>
+                        <p>Phone: <span th:text="${order.sdtNhan}">0900000000</span></p>
+                        <p>Payment Method: <span th:text="${order.phuongThucThanhToan}">Cash</span></p>
+                        <p>Payment Status: <span th:text="${order.trangThaiThanhToan}">Unpaid</span></p>
+                        <p>Address: <span th:text="${order.diaChiNhan}">Address</span></p>
+                    </div>
+                </div>
+
+                <div style="text-align:right; display:grid; gap:12px; justify-items:end;">
+                    <strong th:text="${'$' + #numbers.formatDecimal(order.tongTien / 26000,1,'COMMA',2,'POINT')}">
+                        $0.00
+                    </strong>
+
+                    <a class="sz-btn dark" th:href="@{/invoice/{id}(id=${order.maDH})}">Invoice</a>
+
+                    <form th:if="${order.trangThaiDonHang == 'Delivered'}"
+                          th:action="@{/returns/request/{id}(id=${order.maDH})}"
+                          method="post">
+                        <input class="sz-input" name="lyDo" placeholder="Return reason" style="width:200px; margin-bottom:8px;">
+                        <button class="sz-btn" type="submit">Request Return</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="order-progress">
+                <span th:classappend="${order.trangThaiDonHang == 'Pending'
+                        or order.trangThaiDonHang == 'Confirmed'
+                        or order.trangThaiDonHang == 'Shipping'
+                        or order.trangThaiDonHang == 'Delivered'
+                        or order.trangThaiDonHang == 'Return Requested'
+                        or order.trangThaiDonHang == 'Return Approved'} ? 'active'">
+                    Pending
+                </span>
+
+                <span th:classappend="${order.trangThaiDonHang == 'Confirmed'
+                        or order.trangThaiDonHang == 'Shipping'
+                        or order.trangThaiDonHang == 'Delivered'
+                        or order.trangThaiDonHang == 'Return Requested'
+                        or order.trangThaiDonHang == 'Return Approved'} ? 'active'">
+                    Confirmed
+                </span>
+
+                <span th:classappend="${order.trangThaiDonHang == 'Shipping'
+                        or order.trangThaiDonHang == 'Delivered'
+                        or order.trangThaiDonHang == 'Return Requested'
+                        or order.trangThaiDonHang == 'Return Approved'} ? 'active'">
+                    Shipping
+                </span>
+
+                <span th:classappend="${order.trangThaiDonHang == 'Delivered'
+                        or order.trangThaiDonHang == 'Return Requested'
+                        or order.trangThaiDonHang == 'Return Approved'} ? 'active'">
+                    Delivered
+                </span>
+
+                <span th:if="${order.trangThaiDonHang == 'Return Requested'}" class="active">
+                    Return Requested
+                </span>
+
+                <span th:if="${order.trangThaiDonHang == 'Return Approved'}" class="active">
+                    Return Approved
+                </span>
+
+                <span th:if="${order.trangThaiDonHang == 'Cancelled'}" class="cancelled">
+                    Cancelled
+                </span>
+            </div>
+        </article>
+    </section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

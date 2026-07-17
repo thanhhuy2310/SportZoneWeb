@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-section">
+    <div class="sz-container">
+        <div class="sz-checkout-box">
+            <h1 class="sz-page-title">INVOICE</h1>
+
+            <div class="sz-summary-row">
+                <span>Invoice No.</span>
+                <strong th:text="${'SZ-' + order.maDH}">SZ-1</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Date</span>
+                <strong th:text="${order.ngayDat != null ? #temporals.format(order.ngayDat,'dd/MM/yyyy HH:mm') : 'No date'}">
+                    08/06/2026
+                </strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Customer</span>
+                <strong th:text="${order.hoTenNhan}">Customer</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Phone</span>
+                <strong th:text="${order.sdtNhan}">0900000000</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Address</span>
+                <strong th:text="${order.diaChiNhan}">Address</strong>
+            </div>
+
+            <hr>
+
+            <table class="adminx-table">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Variant</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ct : ${order.chiTiet}">
+                    <td th:text="${ct.bienThe != null and ct.bienThe.sanPham != null ? ct.bienThe.sanPham.tenSP : 'Product'}">Product</td>
+                    <td>
+                        <span th:text="${ct.bienThe != null and ct.bienThe.sizeGiay != null ? ct.bienThe.sizeGiay.tenSize : ''}">40</span>
+                        /
+                        <span th:text="${ct.bienThe != null and ct.bienThe.mauSac != null ? ct.bienThe.mauSac.tenMau : ''}">Black</span>
+                    </td>
+                    <td th:text="${ct.soLuong}">1</td>
+                    <td th:text="${'$' + #numbers.formatDecimal(ct.donGia / 26000,1,'COMMA',2,'POINT')}">$0.00</td>
+                    <td th:text="${'$' + #numbers.formatDecimal(ct.thanhTien() / 26000,1,'COMMA',2,'POINT')}">$0.00</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <div class="sz-summary-row">
+                <span>Subtotal</span>
+                <strong th:text="${'$' + #numbers.formatDecimal(order.tamTinh / 26000,1,'COMMA',2,'POINT')}">$0.00</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Shipping</span>
+                <strong th:text="${'$' + #numbers.formatDecimal(order.phiVanChuyen / 26000,1,'COMMA',2,'POINT')}">$0.00</strong>
+            </div>
+
+            <div class="sz-summary-row" th:if="${order.giamGia != null and order.giamGia > 0}">
+                <span>Discount</span>
+                <strong style="color:#22c55e" th:text="${'-$' + #numbers.formatDecimal(order.giamGia / 26000,1,'COMMA',2,'POINT')}">-$0.00</strong>
+            </div>
+
+            <div class="sz-summary-row total">
+                <span>Total</span>
+                <strong th:text="${'$' + #numbers.formatDecimal(order.tongTien / 26000,1,'COMMA',2,'POINT')}">$0.00</strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Payment</span>
+                <strong th:text="${order.phuongThucThanhToan + ' - ' + order.trangThaiThanhToan}">Cash - Unpaid</strong>
+            </div>
+
+            <a class="sz-btn dark" th:href="@{/profile}">Back</a>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

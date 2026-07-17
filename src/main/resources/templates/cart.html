@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-empty" th:if="${items == null or items.isEmpty()}">
+    <div>
+        <div class="sz-empty-icon">▣</div>
+        <h1>Your Cart Is Empty</h1>
+        <p>Looks like you haven't added anything to your cart yet.</p>
+        <a class="sz-btn" th:href="@{/products}">Start Shopping →</a>
+    </div>
+</section>
+
+<section class="sz-section" th:if="${items != null and !items.isEmpty()}">
+    <div class="sz-container sz-checkout-layout">
+        <div>
+            <h1 class="sz-page-title">Shopping Cart</h1>
+
+            <div class="alert-error" th:if="${param.stockError}">Số lượng sản phẩm trong kho không đủ.</div>
+
+            <table class="sz-cart-table">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Size / Color</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td>
+                        <div class="sz-cart-product">
+                            <img th:src="${item.sanPham.imageUrl}"
+                                 th:alt="${item.sanPham.tenSP}">
+
+                            <div>
+                                <strong th:text="${item.sanPham.tenSP}">
+                                    Air Max
+                                </strong>
+
+                                <p th:text="${item.sanPham.thuongHieu != null ? item.sanPham.thuongHieu.tenTH : 'SportZone'}">
+                                    Nike
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="cart-variant-info">
+                                <span>
+                                    Size:
+                                    <b th:text="${item.bienThe.sizeGiay != null ? item.bienThe.sizeGiay.tenSize : '-'}">
+                                        40
+                                    </b>
+                                </span>
+
+                            <span>
+                                    Color:
+                                    <i class="cart-color-dot"
+                                       th:if="${item.bienThe.mauSac != null}"
+                                       th:style="'background:' + ${item.bienThe.mauSac.maMauHex}">
+                                    </i>
+
+                                    <b th:text="${item.bienThe.mauSac != null ? item.bienThe.mauSac.tenMau : '-'}">
+                                        Black
+                                    </b>
+                                </span>
+                        </div>
+                    </td>
+
+                    <td th:text="${'$' + #numbers.formatDecimal(item.sanPham.giaHienThi() / 26000, 1, 'COMMA', 2, 'POINT')}">
+                        $189
+                    </td>
+
+                    <td>
+                        <form th:action="@{/cart/update}" method="post">
+                            <input type="hidden"
+                                   name="maSP"
+                                   th:value="${item.bienThe.maBT}">
+
+                            <input class="sz-input"
+                                   style="width: 90px; height: 48px;"
+                                   type="number"
+                                   name="quantity"
+                                   min="0"
+                                   th:value="${item.soLuong}">
+
+                            <button type="submit" style="display:none;">
+                                Update
+                            </button>
+                        </form>
+                    </td>
+
+                    <td th:text="${'$' + #numbers.formatDecimal(item.thanhTien() / 26000, 1, 'COMMA', 2, 'POINT')}">
+                        $189
+                    </td>
+
+                    <td>
+                        <a th:href="@{/cart/remove/{id}(id=${item.bienThe.maBT})}"
+                           style="color: var(--red);">
+                            Remove
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <aside class="sz-checkout-box">
+            <h2 class="sz-section-title">Order Summary</h2>
+
+            <div class="sz-summary-row">
+                <span>Subtotal</span>
+
+                <strong th:text="${'$' + #numbers.formatDecimal(total / 26000, 1, 'COMMA', 2, 'POINT')}">
+                    $0
+                </strong>
+            </div>
+
+            <div class="sz-summary-row">
+                <span>Shipping</span>
+                <strong>$1.15</strong>
+            </div>
+
+            <div class="sz-summary-row total">
+                <span>Total</span>
+
+                <strong th:text="${'$' + #numbers.formatDecimal((total + 30000) / 26000, 1, 'COMMA', 2, 'POINT')}">
+                    $3
+                </strong>
+            </div>
+
+            <a class="sz-btn"
+               th:href="@{/checkout}"
+               style="width: 100%; margin-top: 28px;">
+                Checkout →
+            </a>
+        </aside>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

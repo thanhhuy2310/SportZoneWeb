@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-section">
+    <div class="sz-container">
+        <h1 class="sz-page-title">CHECKOUT</h1>
+
+        <div class="alert-error" th:if="${param.stockError}">
+            Số lượng sản phẩm trong kho không đủ. Vui lòng kiểm tra lại giỏ hàng.
+        </div>
+
+        <div class="alert-error" th:if="${param.couponError}">
+            Mã giảm giá không hợp lệ hoặc đã hết lượt sử dụng.
+        </div>
+
+        <div class="sz-checkout-layout">
+            <form id="orderForm" class="sz-checkout-box" th:action="@{/checkout}" method="post">
+                <h2 class="sz-section-title">SHIPPING ADDRESS</h2>
+
+                <div class="sz-form-grid">
+                    <div class="sz-field">
+                        <label>Full Name</label>
+                        <input class="sz-input" type="text" name="hoTenNhan"
+                               th:value="${loginUser != null ? loginUser.hoTen : ''}" required>
+                    </div>
+
+                    <div class="sz-field">
+                        <label>Phone Number</label>
+                        <input class="sz-input" type="text" name="sdtNhan"
+                               th:value="${loginUser != null ? loginUser.soDienThoai : ''}" required>
+                    </div>
+                </div>
+
+                <div class="sz-field">
+                    <label>Address</label>
+                    <input class="sz-input" type="text" name="diaChiNhan"
+                           th:value="${loginUser != null ? loginUser.diaChi : ''}" required>
+                </div>
+
+                <div class="sz-field">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod" class="sz-select" name="phuongThucThanhToan">
+                        <option value="Cash">Cash</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="VNPay">VNPay</option>
+                        <option value="MoMo">MoMo</option>
+                    </select>
+                </div>
+
+                <div id="cashBox" class="payment-box">
+                    <h4>💵 Cash On Delivery</h4>
+                    <p>Thanh toán trực tiếp cho nhân viên giao hàng khi nhận sản phẩm.</p>
+                    <p>Đơn hàng sẽ được xử lý ngay sau khi đặt thành công.</p>
+                </div>
+
+                <div id="bankBox" class="payment-box" style="display:none">
+                    <h4>🏦 Bank Transfer</h4>
+                    <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                    <p><strong>Số tài khoản:</strong> 123456789</p>
+                    <p><strong>Chủ tài khoản:</strong> SPORTZONE STORE</p>
+                    <p><strong>Nội dung:</strong> Ghi số điện thoại đặt hàng</p>
+                </div>
+
+                <div id="vnpayBox" class="payment-box" style="display:none">
+                    <h4>💳 VNPay</h4>
+                    <p>Đơn hàng sẽ được ghi nhận là đã thanh toán sau khi giao dịch VNPay thành công.</p>
+                    <p>Hiện tại chức năng VNPay đang ở mức mô phỏng demo.</p>
+                </div>
+
+                <div id="momoBox" class="payment-box" style="display:none">
+                    <h4>🟣 MoMo</h4>
+                    <p>Quét ví MoMo hoặc thanh toán qua ứng dụng MoMo.</p>
+                    <p>Hiện tại chức năng MoMo đang ở mức mô phỏng demo.</p>
+                </div>
+
+                <div class="sz-field">
+                    <label>Note</label>
+                    <textarea class="sz-textarea" name="ghiChu" rows="4" placeholder="Delivery note"></textarea>
+                </div>
+
+                <button class="sz-btn" type="submit">PLACE ORDER →</button>
+            </form>
+
+            <aside class="sz-checkout-box">
+                <h2 class="sz-section-title">ORDER SUMMARY</h2>
+
+                <div th:each="item : ${items}" class="sz-summary-row">
+                    <span>
+                        <span th:text="${item.sanPham.tenSP}">Product</span>
+                        x
+                        <span th:text="${item.soLuong}">1</span>
+                    </span>
+
+                    <strong th:text="${'$' + #numbers.formatDecimal(item.thanhTien() / 26000,1,'COMMA',2,'POINT')}">
+                        $0.00
+                    </strong>
+                </div>
+
+                <hr>
+
+                <div class="sz-summary-row">
+                    <span>Subtotal</span>
+                    <strong th:text="${'$' + #numbers.formatDecimal(subtotal / 26000,1,'COMMA',2,'POINT')}">
+                        $0.00
+                    </strong>
+                </div>
+
+                <div class="sz-summary-row">
+                    <span>Shipping</span>
+                    <strong th:text="${'$' + #numbers.formatDecimal(shipping / 26000,1,'COMMA',2,'POINT')}">
+                        $0.00
+                    </strong>
+                </div>
+
+                <div class="sz-summary-row" th:if="${discount != null and discount > 0}">
+                    <span>Discount</span>
+                    <strong style="color:#22c55e"
+                            th:text="${'-$' + #numbers.formatDecimal(discount / 26000,1,'COMMA',2,'POINT')}">
+                        -$0.00
+                    </strong>
+                </div>
+
+                <div class="sz-summary-row total">
+                    <span>Total</span>
+                    <strong th:text="${'$' + #numbers.formatDecimal(total / 26000,1,'COMMA',2,'POINT')}">
+                        $0.00
+                    </strong>
+                </div>
+
+                <form class="coupon-mini-form" th:action="@{/checkout/apply-coupon}" method="post" style="margin-top:24px;">
+                    <label style="display:block; margin-bottom:10px; font-weight:900;">Coupon Code</label>
+                    <div style="display:flex; gap:10px;">
+                        <input class="sz-input" type="text" name="couponCode"
+                               th:value="${couponCode}" placeholder="SPORT10">
+                        <button class="sz-btn" type="submit">Apply</button>
+                    </div>
+                </form>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    const paymentMethod = document.getElementById("paymentMethod");
+    const cashBox = document.getElementById("cashBox");
+    const bankBox = document.getElementById("bankBox");
+    const vnpayBox = document.getElementById("vnpayBox");
+    const momoBox = document.getElementById("momoBox");
+
+    function togglePaymentBox() {
+        cashBox.style.display = "none";
+        bankBox.style.display = "none";
+        vnpayBox.style.display = "none";
+        momoBox.style.display = "none";
+
+        if (paymentMethod.value === "Cash") cashBox.style.display = "block";
+        if (paymentMethod.value === "Bank Transfer") bankBox.style.display = "block";
+        if (paymentMethod.value === "VNPay") vnpayBox.style.display = "block";
+        if (paymentMethod.value === "MoMo") momoBox.style.display = "block";
+    }
+
+    paymentMethod.addEventListener("change", togglePaymentBox);
+    togglePaymentBox();
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+package com.sportzone.repository; import com.sportzone.entity.LienHe; import org.springframework.data.jpa.repository.JpaRepository; public interface LienHeRepository extends JpaRepository<LienHe,Integer>{}

@@ -1,0 +1,26 @@
+<aside class="admin-sidebar" th:fragment="side(active)">
+    <div class="admin-logo">
+        <span class="sz-logo-box">SZ</span>
+        <span class="sz-logo-text" style="font-size: 24px;">ADMIN</span>
+    </div>
+
+    <nav class="admin-menu">
+        <a th:classappend="${active == 'dashboard'} ? ' active'" th:href="@{/admin}">▦ Dashboard</a>
+        <a th:classappend="${active == 'orders'} ? ' active'" th:href="@{/admin/orders}">🛒 Orders</a>
+        <a th:classappend="${active == 'returns'} ? ' active'" th:href="@{/admin/returns}">↺ Returns</a>
+        <a th:classappend="${active == 'products'} ? ' active'" th:href="@{/admin/products}">▧ Products</a>
+        <a th:classappend="${active == 'brands'} ? ' active'" th:href="@{/admin/brands}">◇ Brands</a>
+        <a th:classappend="${active == 'categories'} ? ' active'" th:href="@{/admin/categories}">▽ Categories</a>
+        <a th:classappend="${active == 'customers'} ? ' active'" th:href="@{/admin/customers}">♙ Customers</a>
+        <a th:classappend="${active == 'contacts'} ? ' active'" th:href="@{/admin/contacts}">✉ Contacts</a>
+        <a th:href="@{/logout}">↪ Sign Out</a>
+    </nav>
+
+    <div style="margin-top: auto; padding: 24px; border-top: 1px solid var(--line); display: flex; gap: 16px; align-items: center;">
+        <div class="sz-avatar" style="width: 52px; height: 52px; font-size: 16px;">AD</div>
+        <div>
+            <strong>Admin User</strong>
+            <p style="margin: 6px 0 0; color: #7f899d;">Super Admin</p>
+        </div>
+    </div>
+</aside>

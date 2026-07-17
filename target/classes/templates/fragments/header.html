@@ -1,0 +1,175 @@
+<div th:fragment="header">
+    <div class="sz-topbar">
+        ⚡ FREE SHIPPING ON ORDERS OVER $100 — USE CODE: SPORT20 FOR 20% OFF
+    </div>
+
+    <header class="sz-header">
+        <div class="sz-nav">
+            <a class="sz-logo" th:href="@{/}">
+                <span class="sz-logo-box">SZ</span>
+
+                <span class="sz-logo-text">
+                    SPORT<span>ZONE</span>
+                </span>
+            </a>
+
+            <nav class="sz-menu">
+                <div class="sz-menu-item">
+                    <a th:href="@{/products}">
+                        MEN
+                        <span>⌄</span>
+                    </a>
+
+                    <div class="sz-mega">
+                        <div>
+                            <h4>MEN SIZE</h4>
+
+                            <a th:each="s : ${menSizes}"
+                               th:href="@{/products(size=${s.maSize})}"
+                               th:text="${'Size ' + s.tenSize}">
+                                Size 40
+                            </a>
+                        </div>
+
+                        <div>
+                            <h4>CATEGORIES</h4>
+
+                            <a th:each="c : ${navCategories}"
+                               th:href="@{/products(category=${c.maLoai})}"
+                               th:text="${c.tenLoai}">
+                                Running
+                            </a>
+                        </div>
+
+                        <div class="sz-mega-banners">
+                            <a class="sz-mega-banner"
+                               th:href="@{/products(sale=true)}"
+                               style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900&h=500&fit=crop&auto=format')">
+                                <div>
+                                    <b>SALE</b>
+                                    <h3>Up to 40% Off</h3>
+                                </div>
+                            </a>
+
+                            <a class="sz-mega-banner"
+                               th:href="@{/products}"
+                               style="background-image: url('https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=900&h=500&fit=crop&auto=format')">
+                                <div>
+                                    <b>NEW</b>
+                                    <h3>New Arrivals</h3>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sz-menu-item">
+                    <a th:href="@{/products}">
+                        WOMEN
+                        <span>⌄</span>
+                    </a>
+
+                    <div class="sz-mega">
+                        <div>
+                            <h4>WOMEN SIZE</h4>
+
+                            <a th:each="s : ${womenSizes}"
+                               th:href="@{/products(size=${s.maSize})}"
+                               th:text="${'Size ' + s.tenSize}">
+                                Size 37
+                            </a>
+                        </div>
+
+                        <div>
+                            <h4>CATEGORIES</h4>
+
+                            <a th:each="c : ${navCategories}"
+                               th:href="@{/products(category=${c.maLoai})}"
+                               th:text="${c.tenLoai}">
+                                Lifestyle
+                            </a>
+                        </div>
+
+                        <div class="sz-mega-banners">
+                            <a class="sz-mega-banner"
+                               th:href="@{/products}"
+                               style="background-image: url('https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=900&h=500&fit=crop&auto=format')">
+                                <div>
+                                    <b>WOMEN</b>
+                                    <h3>Fresh Drops</h3>
+                                </div>
+                            </a>
+
+                            <a class="sz-mega-banner"
+                               th:href="@{/brands}"
+                               style="background-image: url('https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=900&h=500&fit=crop&auto=format')">
+                                <div>
+                                    <b>BRANDS</b>
+                                    <h3>Top Picks</h3>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <a th:href="@{/brands}">
+                    BRANDS
+                </a>
+
+                <a class="sz-sale-link" th:href="@{/products(sale=true)}">
+                    SALE
+                </a>
+            </nav>
+
+            <div class="sz-icons">
+                <a class="sz-icon-link" th:href="@{/products}" aria-label="Search">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 21L16.65 16.65M18 11A7 7 0 1 1 4 11A7 7 0 0 1 18 11Z"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a class="sz-icon-link" th:href="@{/wishlist}" aria-label="Wishlist">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M20.8 4.6C19 2.9 16.2 3 14.5 4.9L12 7.5L9.5 4.9C7.8 3 5 2.9 3.2 4.6C1.3 6.5 1.3 9.5 3.2 11.4L12 20L20.8 11.4C22.7 9.5 22.7 6.5 20.8 4.6Z"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              fill="none"/>
+                    </svg>
+                </a>
+
+                <a class="sz-icon-link" th:href="@{/cart}" aria-label="Cart">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 4H5L7.4 15.2C7.6 16.2 8.5 17 9.5 17H18.2C19.2 17 20.1 16.3 20.4 15.3L22 8H6.3"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <circle cx="10" cy="20" r="1.5" fill="currentColor"/>
+                        <circle cx="18" cy="20" r="1.5" fill="currentColor"/>
+                    </svg>
+
+                    <span class="sz-badge" th:text="${cartCount}">
+                        0
+                    </span>
+                </a>
+
+                <a class="sz-icon-link"
+                   th:href="${loginUser == null ? '/login' : '/profile'}"
+                   aria-label="Account">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 21A8 8 0 0 0 4 21"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"/>
+                        <circle cx="12" cy="7" r="4"
+                                stroke="currentColor"
+                                stroke-width="2"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+</div>

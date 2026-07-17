@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+<body>
+<div class="admin-layout">
+    <div th:replace="~{admin/fragments :: side('dashboard')}"></div>
+
+    <main class="admin-main">
+        <div class="admin-top">
+            <div class="admin-search">⌕ Search...</div>
+            <div style="display:flex; align-items:center; gap:18px;">
+                <span>🔔</span>
+                <div class="sz-avatar" style="width:48px; height:48px; font-size:15px;">AD</div>
+                <strong>Admin</strong>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:start;">
+            <div>
+                <h1 class="admin-title">Dashboard</h1>
+                <div class="admin-date">SportZone Management</div>
+            </div>
+        </div>
+
+        <section class="admin-stats">
+            <div class="admin-stat">
+                <label>Total Revenue</label>
+                <strong th:text="${'$' + #numbers.formatDecimal(revenue / 26000, 1, 'COMMA', 2, 'POINT')}">$0.00</strong>
+                <span style="color: var(--green);">Paid / Delivered</span>
+            </div>
+
+            <div class="admin-stat">
+                <label>Total Orders</label>
+                <strong th:text="${totalOrders}">0</strong>
+                <span style="color: var(--green);">All orders</span>
+            </div>
+
+            <div class="admin-stat">
+                <label>Active Customers</label>
+                <strong th:text="${totalUsers}">0</strong>
+                <span style="color: var(--green);">Registered users</span>
+            </div>
+
+            <div class="admin-stat">
+                <label>Total Products</label>
+                <strong th:text="${totalProducts}">0</strong>
+                <span style="color: #ff5875;">Inventory items</span>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <h2>Revenue & Orders</h2>
+
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Revenue</th>
+                    <th>Orders</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row : ${revenueRows}">
+                    <td th:text="${row.month}">Jan</td>
+                    <td th:text="${'$' + #numbers.formatDecimal(row.revenue / 26000, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
+                    <td th:text="${row.orders}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="admin-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Recent Orders</h2>
+                <a style="color: var(--red);" th:href="@{/admin/orders}">View All</a>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${recentOrders}">
+                    <td th:text="${'SZ-' + order.maDH}">SZ-01</td>
+                    <td th:text="${order.hoTenNhan}">Customer</td>
+                    <td th:text="${'$' + #numbers.formatDecimal(order.tongTien / 26000, 1, 'COMMA', 2, 'POINT')}">$0.00</td>
+                    <td><span class="sz-status" th:text="${order.trangThaiDonHang}">Pending</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+</body>
+</html>

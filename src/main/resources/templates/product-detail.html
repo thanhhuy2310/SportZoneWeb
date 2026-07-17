@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product != null ? product.tenSP : 'Product'} + ' - SportZone'">
+        Product - SportZone
+    </title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<section class="sz-section" th:if="${product != null}">
+    <div class="sz-container product-detail-layout">
+        <div>
+            <img class="product-detail-image"
+                 th:src="${product.imageUrl}"
+                 th:alt="${product.tenSP}">
+        </div>
+
+        <div>
+            <div class="sz-product-brand"
+                 th:text="${product.thuongHieu != null ? product.thuongHieu.tenTH : 'SportZone'}">
+                Nike
+            </div>
+
+            <h1 class="sz-page-title" th:text="${product.tenSP}">
+                Air Max 270 React
+            </h1>
+
+            <div class="alert-error" th:if="${param.stockError}">
+                Số lượng sản phẩm trong kho không đủ. Vui lòng chọn số lượng nhỏ hơn.
+            </div>
+
+            <div class="sz-rating">★ ★ ★ ★ ☆</div>
+
+            <div class="sz-product-price product-detail-price">
+                <strong th:text="${'$' + #numbers.formatDecimal(product.giaHienThi() / 26000, 1, 'COMMA', 2, 'POINT')}">
+                    $189
+                </strong>
+
+                <del th:if="${product.coGiamGia()}"
+                     th:text="${'$' + #numbers.formatDecimal(product.gia / 26000, 1, 'COMMA', 2, 'POINT')}">
+                    $249
+                </del>
+            </div>
+
+            <div class="stock-status"
+                 th:classappend="${tongTonKho == null or tongTonKho <= 0} ? 'out'">
+                <span>STOCK:</span>
+
+                <strong th:if="${tongTonKho != null and tongTonKho > 0}"
+                        th:text="${tongTonKho + ' pairs left'}">
+                    0 pairs left
+                </strong>
+
+                <strong th:if="${tongTonKho == null or tongTonKho <= 0}">
+                    Out of stock
+                </strong>
+            </div>
+
+            <p class="product-detail-desc" th:text="${product.moTa}">
+                Premium sneaker with authentic material and modern design.
+            </p>
+
+            <form th:action="@{/cart/add/{id}(id=${product.maSP})}"
+                  method="post"
+                  class="product-detail-form">
+
+                <div class="variant-group-db">
+                    <label>SIZE / COLOR</label>
+
+                    <div class="variant-options-db">
+                        <label th:each="v : ${variants}"
+                               class="size-option-db"
+                               th:if="${v != null and v.sizeGiay != null and v.mauSac != null}">
+
+                            <input type="radio"
+                                   name="maBT"
+                                   th:value="${v.maBT}"
+                                   required>
+
+                            <span th:text="${v.sizeGiay.tenSize + ' - ' + v.mauSac.tenMau}">
+                                40 - Black
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="sz-field quantity-field">
+                    <label>QUANTITY</label>
+
+                    <input class="sz-input"
+                           type="number"
+                           name="quantity"
+                           min="1"
+                           value="1">
+                </div>
+
+                <button class="sz-btn"
+                        type="submit"
+                        th:disabled="${tongTonKho == null or tongTonKho <= 0}">
+                    ADD TO CART →
+                </button>
+
+                <a class="sz-btn dark"
+                   th:href="@{/wishlist/add/{id}(id=${product.maSP})}">
+                    ♡ WISHLIST
+                </a>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="sz-section">
+    <div class="sz-container">
+        <div class="sz-section-head">
+            <div>
+                <div class="sz-kicker">YOU MAY ALSO LIKE</div>
+                <h2 class="sz-section-title">RELATED SNEAKERS</h2>
+            </div>
+        </div>
+
+        <div class="sz-product-grid">
+            <div th:each="sp, stat : ${related}" th:if="${stat.index < 4}">
+                <div th:replace="~{fragments/product-card :: card(sp=${sp})}"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

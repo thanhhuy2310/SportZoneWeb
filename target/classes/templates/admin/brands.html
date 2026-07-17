@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Brands | SportZone Admin</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+
+<body class="adminx-body">
+    <div class="adminx-shell">
+        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+
+        <main class="adminx-main">
+            <div class="adminx-top">
+                <div>
+                    <p class="adminx-kicker">ADMIN PANEL</p>
+                    <h1>Brands</h1>
+                    <span>Manage sneaker brands</span>
+                </div>
+            </div>
+
+
+<div class="adminx-alert" th:if="${param.deleteError}">
+    Không thể xóa thương hiệu vì đang có sản phẩm sử dụng thương hiệu này.
+</div>
+
+<section class="adminx-panel">
+    <div class="adminx-panel-head">
+        <h2>Brand List</h2>
+        <a class="adminx-btn" th:href="@{/admin/brands/create}">+ Add Brand</a>
+    </div>
+
+    <div class="adminx-card-grid">
+        <div class="adminx-brand-card" th:each="b : ${brands}">
+            <img th:src="${b.logo}" th:alt="${b.tenTH}">
+
+            <div>
+                <h3 th:text="${b.tenTH}">Nike</h3>
+                <p th:text="${b.moTa}">Description</p>
+            </div>
+
+            <span class="adminx-badge" th:text="${b.trangThai ? 'Active' : 'Hidden'}">Active</span>
+
+            <div class="adminx-actions">
+                <a th:href="@{/admin/brands/edit/{id}(id=${b.maTH})}">Edit</a>
+                <a class="danger"
+                   onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')"
+                   th:href="@{/admin/brands/delete/{id}(id=${b.maTH})}">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="adminx-empty" th:if="${brands == null or brands.isEmpty()}">
+        No brands found.
+    </div>
+</section>
+
+        </main>
+    </div>
+</body>
+</html>

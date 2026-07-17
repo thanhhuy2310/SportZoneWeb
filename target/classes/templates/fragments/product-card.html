@@ -1,0 +1,85 @@
+<div th:fragment="card(sp)"
+     class="sz-product-card"
+     th:if="${sp != null}">
+
+    <div class="sz-product-image">
+
+        <span class="sz-new-badge"
+              th:unless="${sp.coGiamGia()}">
+            New
+        </span>
+
+        <span class="sz-discount"
+              th:if="${sp.coGiamGia()}"
+              th:text="${'-' + sp.phanTramGiam() + '%'}">
+            -24%
+        </span>
+
+        <a class="sz-heart"
+           th:href="@{/wishlist/add/{id}(id=${sp.maSP})}">
+
+            ♥
+        </a>
+
+        <a class="sz-product-click"
+           th:href="@{/products/{id}(id=${sp.maSP})}">
+
+            <img th:src="${sp.imageUrl}"
+                 th:alt="${sp.tenSP}">
+        </a>
+
+    </div>
+
+    <a class="sz-product-click"
+       th:href="@{/products/{id}(id=${sp.maSP})}">
+
+        <div class="sz-product-info">
+
+            <div class="sz-product-brand"
+                 th:text="${sp.thuongHieu != null ? sp.thuongHieu.tenTH : 'SportZone'}">
+                Puma
+            </div>
+
+            <h3 th:text="${sp.tenSP}">
+                RS-X³ Puzzle
+            </h3>
+
+            <div class="sz-product-category"
+                 th:text="${sp.loaiGiay != null ? sp.loaiGiay.tenLoai : 'Lifestyle'}">
+                Lifestyle
+            </div>
+
+            <div class="sz-rating">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span class="muted">☆</span>
+                <small>(891)</small>
+            </div>
+
+            <div class="sz-product-price">
+
+                <strong
+                        th:text="${'$' + #numbers.formatDecimal(sp.giaHienThi()/26000,1,'COMMA',2,'POINT')}">
+                    $129
+                </strong>
+
+                <del th:if="${sp.coGiamGia()}"
+                     th:text="${'$' + #numbers.formatDecimal(sp.gia/26000,1,'COMMA',2,'POINT')}">
+                    $160
+                </del>
+
+            </div>
+
+            <div class="sz-color-dots">
+                <span class="orange"></span>
+                <span class="black"></span>
+                <span class="white"></span>
+            </div>
+
+        </div>
+
+    </a>
+
+</div>

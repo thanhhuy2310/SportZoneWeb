@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - SportZone</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+<body>
+    <main class="sz-auth-wrap">
+        <section class="sz-auth-card">
+            <a class="sz-logo sz-auth-logo" th:href="@{/}">
+                <span class="sz-logo-box">SZ</span>
+                <span class="sz-logo-text">SPORT<span>ZONE</span></span>
+            </a>
+
+            <h1 class="sz-auth-title">Sign In</h1>
+            <p class="sz-auth-sub">
+                Don't have an account?
+                <a th:href="@{/register}">Create one</a>
+            </p>
+
+            <div th:if="${error}" class="sz-error" th:text="${error}">Wrong login.</div>
+            <div th:if="${param.registered}" class="sz-success">Account created successfully. Please sign in.</div>
+
+            <div class="sz-social-row">
+                <button class="sz-social-btn" type="button">G&nbsp;&nbsp;Google</button>
+                <button class="sz-social-btn" type="button">Apple</button>
+            </div>
+
+            <div class="sz-divider">or sign in with email</div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="sz-field">
+                    <label>Email Address</label>
+                    <input class="sz-input" type="email" name="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="sz-field">
+                    <label>Password</label>
+                    <input class="sz-input" type="password" name="matKhau" placeholder="••••••••" required>
+                </div>
+
+                <div class="sz-form-note" style="margin-bottom: 28px;">
+                    <label>
+                        <input type="checkbox">
+                        Remember me for 30 days
+                    </label>
+                    <a href="#" style="float: right; color: var(--red);">Forgot password?</a>
+                </div>
+
+                <button class="sz-btn" type="submit" style="width: 100%; height: 76px; font-size: 18px;">
+                    Sign In →
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
