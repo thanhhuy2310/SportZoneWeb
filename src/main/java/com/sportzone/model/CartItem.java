@@ -2,7 +2,6 @@ package com.sportzone.model;
 
 import com.sportzone.entity.BienTheSanPham;
 import com.sportzone.entity.SanPham;
-
 import java.math.BigDecimal;
 
 public class CartItem {
@@ -28,8 +27,6 @@ public class CartItem {
     }
 
     public BigDecimal thanhTien() {
-        return getSanPham()
-                .giaHienThi()
-                .multiply(BigDecimal.valueOf(soLuong));
+        return getSanPham().giaHienThi().multiply(BigDecimal.valueOf(soLuong));
     }
 }

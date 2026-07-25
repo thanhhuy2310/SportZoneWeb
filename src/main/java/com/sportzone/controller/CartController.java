@@ -10,13 +10,12 @@ import com.sportzone.repository.MaGiamGiaRepository;
 import com.sportzone.repository.ThuongHieuRepository;
 import com.sportzone.service.CartService;
 import jakarta.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @Controller
 public class CartController extends BaseController {
@@ -33,8 +32,7 @@ public class CartController extends BaseController {
             LoaiGiayRepository loaiGiayRepository,
             DonHangRepository donHangRepository,
             BienTheSanPhamRepository bienTheSanPhamRepository,
-            MaGiamGiaRepository maGiamGiaRepository
-    ) {
+            MaGiamGiaRepository maGiamGiaRepository) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
         this.donHangRepository = donHangRepository;
         this.bienTheSanPhamRepository = bienTheSanPhamRepository;
@@ -47,8 +45,7 @@ public class CartController extends BaseController {
             @RequestParam(required = false) Integer maBT,
             @RequestParam(defaultValue = "1") int quantity,
             @RequestHeader(value = "Referer", required = false) String referer,
-            HttpSession session
-    ) {
+            HttpSession session) {
         try {
             cartService.add(session, maBT != null ? maBT : id, quantity);
             clearCoupon(session);
@@ -67,10 +64,7 @@ public class CartController extends BaseController {
 
     @PostMapping("/cart/update")
     public String update(
-            @RequestParam Integer maSP,
-            @RequestParam int quantity,
-            HttpSession session
-    ) {
+            @RequestParam Integer maSP, @RequestParam int quantity, HttpSession session) {
         try {
             cartService.update(session, maSP, quantity);
             clearCoupon(session);
@@ -93,16 +87,15 @@ public class CartController extends BaseController {
             return "redirect:/cart";
         }
         fillCheckoutModel(session, model, getDiscount(session));
-        model.addAttribute("couponCode", session.getAttribute("couponCode") == null ? "" : session.getAttribute("couponCode"));
+        model.addAttribute(
+                "couponCode",
+                session.getAttribute("couponCode") == null ? "" : session.getAttribute("couponCode"));
         return "checkout";
     }
 
     @PostMapping("/checkout/apply-coupon")
     public String applyCoupon(
-            @RequestParam(required = false) String couponCode,
-            HttpSession session,
-            Model model
-    ) {
+            @RequestParam(required = false) String couponCode, HttpSession session, Model model) {
         if (cartService.items(session).isEmpty()) {
             return "redirect:/cart";
         }
@@ -123,9 +116,10 @@ public class CartController extends BaseController {
             return "redirect:/checkout?couponError";
         }
 
-        BigDecimal discount = subtotal
-                .multiply(BigDecimal.valueOf(coupon.getPhanTramGiam()))
-                .divide(BigDecimal.valueOf(100));
+        BigDecimal discount =
+                subtotal
+                        .multiply(BigDecimal.valueOf(coupon.getPhanTramGiam()))
+                        .divide(BigDecimal.valueOf(100));
 
         session.setAttribute("couponCode", coupon.getCode());
         session.setAttribute("discount", discount);
@@ -143,8 +137,7 @@ public class CartController extends BaseController {
             @RequestParam String diaChiNhan,
             @RequestParam(defaultValue = "Cash") String phuongThucThanhToan,
             @RequestParam(required = false) String ghiChu,
-            HttpSession session
-    ) {
+            HttpSession session) {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
@@ -159,7 +152,10 @@ public class CartController extends BaseController {
             BigDecimal subtotal = cartService.total(session);
             BigDecimal shipping = SHIPPING_FEE;
             BigDecimal discount = getDiscount(session);
-            String couponCode = session.getAttribute("couponCode") == null ? null : session.getAttribute("couponCode").toString();
+            String couponCode =
+                    session.getAttribute("couponCode") == null
+                            ? null
+                            : session.getAttribute("couponCode").toString();
 
             if (couponCode != null && !couponCode.isBlank()) {
                 var coupon = maGiamGiaRepository.findByCodeIgnoreCase(couponCode.trim()).orElse(null);

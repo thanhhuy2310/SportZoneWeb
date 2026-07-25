@@ -24,8 +24,7 @@ public class WishlistController extends BaseController {
             ThuongHieuRepository thuongHieuRepository,
             LoaiGiayRepository loaiGiayRepository,
             YeuThichRepository yeuThichRepository,
-            SanPhamRepository sanPhamRepository
-    ) {
+            SanPhamRepository sanPhamRepository) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
 
         this.yeuThichRepository = yeuThichRepository;
@@ -33,10 +32,7 @@ public class WishlistController extends BaseController {
     }
 
     @GetMapping("/wishlist")
-    public String wishlist(
-            HttpSession session,
-            Model model
-    ) {
+    public String wishlist(HttpSession session, Model model) {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
 
         if (user == null) {
@@ -45,10 +41,7 @@ public class WishlistController extends BaseController {
             return "wishlist";
         }
 
-        model.addAttribute(
-                "products",
-                yeuThichRepository.findSanPhamByMaND(user.getMaND())
-        );
+        model.addAttribute("products", yeuThichRepository.findSanPhamByMaND(user.getMaND()));
 
         return "wishlist";
     }
@@ -57,34 +50,21 @@ public class WishlistController extends BaseController {
     public String addWishlist(
             @PathVariable Integer id,
             HttpSession session,
-            @RequestHeader(value = "Referer", required = false) String referer
-    ) {
+            @RequestHeader(value = "Referer", required = false) String referer) {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        if (!yeuThichRepository.existsByNguoiDung_MaNDAndSanPham_MaSP(
-                user.getMaND(),
-                id
-        )) {
+        if (!yeuThichRepository.existsByNguoiDung_MaNDAndSanPham_MaSP(user.getMaND(), id)) {
             YeuThich yeuThich = new YeuThich();
 
-            yeuThich.setId(
-                    new YeuThichId(
-                            user.getMaND(),
-                            id
-                    )
-            );
+            yeuThich.setId(new YeuThichId(user.getMaND(), id));
 
             yeuThich.setNguoiDung(user);
 
-            yeuThich.setSanPham(
-                    sanPhamRepository
-                            .findById(id)
-                            .orElse(null)
-            );
+            yeuThich.setSanPham(sanPhamRepository.findById(id).orElse(null));
 
             yeuThichRepository.save(yeuThich);
         }
@@ -93,20 +73,14 @@ public class WishlistController extends BaseController {
     }
 
     @GetMapping("/wishlist/remove/{id}")
-    public String removeWishlist(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String removeWishlist(@PathVariable Integer id, HttpSession session) {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        yeuThichRepository.deleteByNguoiDung_MaNDAndSanPham_MaSP(
-                user.getMaND(),
-                id
-        );
+        yeuThichRepository.deleteByNguoiDung_MaNDAndSanPham_MaSP(user.getMaND(), id);
 
         return "redirect:/wishlist";
     }

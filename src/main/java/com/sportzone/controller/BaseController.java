@@ -15,8 +15,7 @@ public abstract class BaseController {
     public BaseController(
             CartService cartService,
             ThuongHieuRepository thuongHieuRepository,
-            LoaiGiayRepository loaiGiayRepository
-    ) {
+            LoaiGiayRepository loaiGiayRepository) {
         this.cartService = cartService;
         this.thuongHieuRepository = thuongHieuRepository;
         this.loaiGiayRepository = loaiGiayRepository;

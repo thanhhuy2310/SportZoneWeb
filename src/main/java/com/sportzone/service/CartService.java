@@ -3,12 +3,11 @@ package com.sportzone.service;
 import com.sportzone.model.CartItem;
 import com.sportzone.repository.BienTheSanPhamRepository;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CartService {
@@ -78,7 +77,8 @@ public class CartService {
         java.util.List<CartItem> list = new ArrayList<>();
 
         for (var entry : map(session).entrySet()) {
-            bienTheSanPhamRepository.findById(entry.getKey())
+            bienTheSanPhamRepository
+                    .findById(entry.getKey())
                     .ifPresent(bt -> list.add(new CartItem(bt, entry.getValue())));
         }
 
@@ -86,22 +86,16 @@ public class CartService {
     }
 
     public BigDecimal total(HttpSession session) {
-        return items(session)
-                .stream()
+        return items(session).stream()
                 .map(CartItem::thanhTien)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public int count(HttpSession session) {
-        return map(session)
-                .values()
-                .stream()
-                .mapToInt(Integer::intValue)
-                .sum();
+        return map(session).values().stream().mapToInt(Integer::intValue).sum();
     }
 
     public void clear(HttpSession session) {
         map(session).clear();
     }
-
 }

@@ -28,8 +28,7 @@ public class HomeController extends BaseController {
             SanPhamRepository sanPhamRepository,
             SizeGiayRepository sizeGiayRepository,
             BienTheSanPhamRepository bienTheSanPhamRepository,
-            LienHeRepository lienHeRepository
-    ) {
+            LienHeRepository lienHeRepository) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
 
         this.sanPhamRepository = sanPhamRepository;
@@ -65,8 +64,7 @@ public class HomeController extends BaseController {
             @RequestParam(required = false) Integer category,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) Boolean sale,
-            Model model
-    ) {
+            Model model) {
         model.addAttribute("products", sanPhamRepository.search(q, brand, category, size, sale));
         model.addAttribute("allSizes", sizeGiayRepository.findAllOrderByNumber());
 
@@ -94,21 +92,11 @@ public class HomeController extends BaseController {
 
             model.addAttribute(
                     "sizes",
-                    variants.stream()
-                            .map(v -> v.getSizeGiay())
-                            .filter(s -> s != null)
-                            .distinct()
-                            .toList()
-            );
+                    variants.stream().map(v -> v.getSizeGiay()).filter(s -> s != null).distinct().toList());
 
             model.addAttribute(
                     "colors",
-                    variants.stream()
-                            .map(v -> v.getMauSac())
-                            .filter(m -> m != null)
-                            .distinct()
-                            .toList()
-            );
+                    variants.stream().map(v -> v.getMauSac()).filter(m -> m != null).distinct().toList());
         }
 
         return "product-detail";

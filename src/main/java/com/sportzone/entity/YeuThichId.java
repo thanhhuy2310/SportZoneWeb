@@ -10,8 +10,7 @@ public class YeuThichId implements Serializable {
     private Integer maND;
     private Integer maSP;
 
-    public YeuThichId() {
-    }
+    public YeuThichId() {}
 
     public YeuThichId(Integer maND, Integer maSP) {
         this.maND = maND;
@@ -38,8 +37,7 @@ public class YeuThichId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof YeuThichId that)) return false;
-        return Objects.equals(maND, that.maND)
-                && Objects.equals(maSP, that.maSP);
+        return Objects.equals(maND, that.maND) && Objects.equals(maSP, that.maSP);
     }
 
     @Override

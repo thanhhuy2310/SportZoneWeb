@@ -1,1 +1,6 @@
-package com.sportzone.repository; import com.sportzone.entity.ChiTietDonHang; import org.springframework.data.jpa.repository.JpaRepository; public interface ChiTietDonHangRepository extends JpaRepository<ChiTietDonHang,Integer>{}
+package com.sportzone.repository;
+
+import com.sportzone.entity.ChiTietDonHang;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ChiTietDonHangRepository extends JpaRepository<ChiTietDonHang, Integer> {}

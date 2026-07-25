@@ -1,10 +1,9 @@
 package com.sportzone.repository;
 
 import com.sportzone.entity.DoiTraHang;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DoiTraHangRepository extends JpaRepository<DoiTraHang, Integer> {
 

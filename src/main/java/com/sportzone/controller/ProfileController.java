@@ -27,8 +27,7 @@ public class ProfileController extends BaseController {
             LoaiGiayRepository loaiGiayRepository,
             DonHangRepository donHangRepository,
             DoiTraHangRepository doiTraHangRepository,
-            NguoiDungRepository nguoiDungRepository
-    ) {
+            NguoiDungRepository nguoiDungRepository) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
         this.donHangRepository = donHangRepository;
         this.doiTraHangRepository = doiTraHangRepository;
@@ -43,7 +42,8 @@ public class ProfileController extends BaseController {
         }
 
         model.addAttribute("loginUser", user);
-        model.addAttribute("orders", donHangRepository.findByNguoiDung_MaNDOrderByNgayDatDesc(user.getMaND()));
+        model.addAttribute(
+                "orders", donHangRepository.findByNguoiDung_MaNDOrderByNgayDatDesc(user.getMaND()));
         return "profile";
     }
 
@@ -65,8 +65,7 @@ public class ProfileController extends BaseController {
             @RequestParam String email,
             @RequestParam(required = false) String soDienThoai,
             @RequestParam(required = false) String diaChi,
-            HttpSession session
-    ) {
+            HttpSession session) {
         NguoiDung userSession = (NguoiDung) session.getAttribute("user");
         if (userSession == null) {
             return "redirect:/login";
@@ -102,7 +101,8 @@ public class ProfileController extends BaseController {
         }
 
         DonHang order = donHangRepository.findById(id).orElseThrow();
-        boolean isOwner = order.getNguoiDung() != null && order.getNguoiDung().getMaND().equals(user.getMaND());
+        boolean isOwner =
+                order.getNguoiDung() != null && order.getNguoiDung().getMaND().equals(user.getMaND());
         boolean isAdmin = "ADMIN".equals(user.getVaiTro()) || "NHANVIEN".equals(user.getVaiTro());
 
         if (!isOwner && !isAdmin) {
@@ -116,19 +116,19 @@ public class ProfileController extends BaseController {
 
     @PostMapping("/returns/request/{id}")
     public String requestReturn(
-            @PathVariable Integer id,
-            @RequestParam(required = false) String lyDo,
-            HttpSession session
-    ) {
+            @PathVariable Integer id, @RequestParam(required = false) String lyDo, HttpSession session) {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
 
         DonHang order = donHangRepository.findById(id).orElseThrow();
-        boolean isOwner = order.getNguoiDung() != null && order.getNguoiDung().getMaND().equals(user.getMaND());
+        boolean isOwner =
+                order.getNguoiDung() != null && order.getNguoiDung().getMaND().equals(user.getMaND());
 
-        if (!isOwner || !"Delivered".equals(order.getTrangThaiDonHang()) || doiTraHangRepository.existsByDonHang_MaDH(id)) {
+        if (!isOwner
+                || !"Delivered".equals(order.getTrangThaiDonHang())
+                || doiTraHangRepository.existsByDonHang_MaDH(id)) {
             return "redirect:/profile?returnError";
         }
 

@@ -4,7 +4,7 @@
     <groupId>com.sportzone</groupId>
     <artifactId>sportzone-java-final</artifactId>
     <version>1.0.0</version>
-    <name>SportZone Java Final</name>
+    <name>SportZone </name>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>

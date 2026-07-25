@@ -42,24 +42,59 @@ public class DoiTraHang {
         }
     }
 
-    public Integer getMaDT() { return maDT; }
-    public void setMaDT(Integer maDT) { this.maDT = maDT; }
+    public Integer getMaDT() {
+        return maDT;
+    }
 
-    public DonHang getDonHang() { return donHang; }
-    public void setDonHang(DonHang donHang) { this.donHang = donHang; }
+    public void setMaDT(Integer maDT) {
+        this.maDT = maDT;
+    }
 
-    public NguoiDung getNguoiDung() { return nguoiDung; }
-    public void setNguoiDung(NguoiDung nguoiDung) { this.nguoiDung = nguoiDung; }
+    public DonHang getDonHang() {
+        return donHang;
+    }
 
-    public String getLyDo() { return lyDo; }
-    public void setLyDo(String lyDo) { this.lyDo = lyDo; }
+    public void setDonHang(DonHang donHang) {
+        this.donHang = donHang;
+    }
 
-    public String getTrangThai() { return trangThai; }
-    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+    public NguoiDung getNguoiDung() {
+        return nguoiDung;
+    }
 
-    public LocalDateTime getNgayYeuCau() { return ngayYeuCau; }
-    public void setNgayYeuCau(LocalDateTime ngayYeuCau) { this.ngayYeuCau = ngayYeuCau; }
+    public void setNguoiDung(NguoiDung nguoiDung) {
+        this.nguoiDung = nguoiDung;
+    }
 
-    public LocalDateTime getNgayXuLy() { return ngayXuLy; }
-    public void setNgayXuLy(LocalDateTime ngayXuLy) { this.ngayXuLy = ngayXuLy; }
+    public String getLyDo() {
+        return lyDo;
+    }
+
+    public void setLyDo(String lyDo) {
+        this.lyDo = lyDo;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public LocalDateTime getNgayYeuCau() {
+        return ngayYeuCau;
+    }
+
+    public void setNgayYeuCau(LocalDateTime ngayYeuCau) {
+        this.ngayYeuCau = ngayYeuCau;
+    }
+
+    public LocalDateTime getNgayXuLy() {
+        return ngayXuLy;
+    }
+
+    public void setNgayXuLy(LocalDateTime ngayXuLy) {
+        this.ngayXuLy = ngayXuLy;
+    }
 }

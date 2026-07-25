@@ -95,7 +95,8 @@ public class SanPham {
     }
 
     public String getImageUrl() {
-        String fallback = "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=900&h=900&fit=crop&auto=format";
+        String fallback =
+                "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=900&h=900&fit=crop&auto=format";
 
         if (anhDaiDien != null && !anhDaiDien.isBlank()) {
             String image = anhDaiDien.trim();

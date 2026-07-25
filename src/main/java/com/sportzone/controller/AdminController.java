@@ -1,5 +1,5 @@
 package com.sportzone.controller;
-import java.math.BigDecimal;
+
 import com.sportzone.entity.ChiTietDonHang;
 import com.sportzone.entity.DoiTraHang;
 import com.sportzone.entity.DonHang;
@@ -17,14 +17,14 @@ import com.sportzone.repository.SanPhamRepository;
 import com.sportzone.repository.ThuongHieuRepository;
 import com.sportzone.service.CartService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -48,8 +48,7 @@ public class AdminController extends BaseController {
             DonHangRepository donHangRepository,
             DoiTraHangRepository doiTraHangRepository,
             BienTheSanPhamRepository bienTheSanPhamRepository,
-            LienHeRepository lienHeRepository
-    ) {
+            LienHeRepository lienHeRepository) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
 
         this.sanPhamRepository = sanPhamRepository;
@@ -66,10 +65,7 @@ public class AdminController extends BaseController {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
 
         return user != null
-                && (
-                        "ADMIN".equals(user.getVaiTro())
-                                || "NHANVIEN".equals(user.getVaiTro())
-                );
+                && ("ADMIN".equals(user.getVaiTro()) || "NHANVIEN".equals(user.getVaiTro()));
     }
 
     @GetMapping
@@ -86,8 +82,8 @@ public class AdminController extends BaseController {
         model.addAttribute("recentOrders", donHangRepository.findTop5ByOrderByNgayDatDesc());
 
         String[] monthNames = {
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         };
 
         BigDecimal[] revenueByMonth = new BigDecimal[12];
@@ -140,8 +136,6 @@ public class AdminController extends BaseController {
         return "admin/dashboard";
     }
 
-    /* ========================= PRODUCT ========================= */
-
     @GetMapping("/products")
     public String products(HttpSession session, Model model) {
         if (!isAdmin(session)) {
@@ -167,19 +161,12 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/products/edit/{id}")
-    public String editProduct(
-            @PathVariable Integer id,
-            HttpSession session,
-            Model model
-    ) {
+    public String editProduct(@PathVariable Integer id, HttpSession session, Model model) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
 
-        model.addAttribute(
-                "product",
-                sanPhamRepository.findById(id).orElseThrow()
-        );
+        model.addAttribute("product", sanPhamRepository.findById(id).orElseThrow());
 
         model.addAttribute("brands", thuongHieuRepository.findAll());
         model.addAttribute("categories", loaiGiayRepository.findAll());
@@ -192,19 +179,14 @@ public class AdminController extends BaseController {
             @ModelAttribute SanPham product,
             @RequestParam Integer maTH,
             @RequestParam Integer maLoai,
-            HttpSession session
-    ) {
+            HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
 
-        product.setThuongHieu(
-                thuongHieuRepository.findById(maTH).orElseThrow()
-        );
+        product.setThuongHieu(thuongHieuRepository.findById(maTH).orElseThrow());
 
-        product.setLoaiGiay(
-                loaiGiayRepository.findById(maLoai).orElseThrow()
-        );
+        product.setLoaiGiay(loaiGiayRepository.findById(maLoai).orElseThrow());
 
         if (product.getTrangThai() == null || product.getTrangThai().isBlank()) {
             product.setTrangThai("Active");
@@ -216,10 +198,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/products/delete/{id}")
-    public String deleteProduct(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String deleteProduct(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -232,8 +211,6 @@ public class AdminController extends BaseController {
 
         return "redirect:/admin/products";
     }
-
-    /* ========================= BRAND ========================= */
 
     @GetMapping("/brands")
     public String brands(HttpSession session, Model model) {
@@ -258,28 +235,18 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/brands/edit/{id}")
-    public String editBrand(
-            @PathVariable Integer id,
-            HttpSession session,
-            Model model
-    ) {
+    public String editBrand(@PathVariable Integer id, HttpSession session, Model model) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
 
-        model.addAttribute(
-                "brand",
-                thuongHieuRepository.findById(id).orElseThrow()
-        );
+        model.addAttribute("brand", thuongHieuRepository.findById(id).orElseThrow());
 
         return "admin/brand-form";
     }
 
     @PostMapping("/brands/save")
-    public String saveBrand(
-            @ModelAttribute ThuongHieu brand,
-            HttpSession session
-    ) {
+    public String saveBrand(@ModelAttribute ThuongHieu brand, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -294,10 +261,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/brands/delete/{id}")
-    public String deleteBrand(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String deleteBrand(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -310,8 +274,6 @@ public class AdminController extends BaseController {
 
         return "redirect:/admin/brands";
     }
-
-    /* ========================= CATEGORY ========================= */
 
     @GetMapping("/categories")
     public String categories(HttpSession session, Model model) {
@@ -336,28 +298,18 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/categories/edit/{id}")
-    public String editCategory(
-            @PathVariable Integer id,
-            HttpSession session,
-            Model model
-    ) {
+    public String editCategory(@PathVariable Integer id, HttpSession session, Model model) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
 
-        model.addAttribute(
-                "category",
-                loaiGiayRepository.findById(id).orElseThrow()
-        );
+        model.addAttribute("category", loaiGiayRepository.findById(id).orElseThrow());
 
         return "admin/category-form";
     }
 
     @PostMapping("/categories/save")
-    public String saveCategory(
-            @ModelAttribute LoaiGiay category,
-            HttpSession session
-    ) {
+    public String saveCategory(@ModelAttribute LoaiGiay category, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -372,10 +324,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/categories/delete/{id}")
-    public String deleteCategory(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String deleteCategory(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -389,8 +338,6 @@ public class AdminController extends BaseController {
         return "redirect:/admin/categories";
     }
 
-    /* ========================= ORDER ========================= */
-
     @GetMapping("/orders")
     public String orders(HttpSession session, Model model) {
         if (!isAdmin(session)) {
@@ -400,25 +347,9 @@ public class AdminController extends BaseController {
         model.addAttribute("orders", donHangRepository.findAllByOrderByNgayDatDesc());
 
         model.addAttribute(
-                "statuses",
-                Arrays.asList(
-                        "Pending",
-                        "Confirmed",
-                        "Shipping",
-                        "Delivered",
-                        "Cancelled"
-                )
-        );
+                "statuses", Arrays.asList("Pending", "Confirmed", "Shipping", "Delivered", "Cancelled"));
 
-        model.addAttribute(
-                "paymentStatuses",
-                Arrays.asList(
-                        "Unpaid",
-                        "Paid",
-                        "Failed",
-                        "Refunded"
-                )
-        );
+        model.addAttribute("paymentStatuses", Arrays.asList("Unpaid", "Paid", "Failed", "Refunded"));
 
         return "admin/orders";
     }
@@ -428,8 +359,7 @@ public class AdminController extends BaseController {
             @RequestParam Integer maDH,
             @RequestParam String status,
             @RequestParam(required = false) String paymentStatus,
-            HttpSession session
-    ) {
+            HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -449,8 +379,6 @@ public class AdminController extends BaseController {
         return "redirect:/admin/orders";
     }
 
-    /* ========================= CUSTOMER ========================= */
-
     @GetMapping("/customers")
     public String customers(HttpSession session, Model model) {
         if (!isAdmin(session)) {
@@ -461,8 +389,6 @@ public class AdminController extends BaseController {
 
         return "admin/customers";
     }
-
-    /* ========================= CONTACT ========================= */
 
     @GetMapping("/contacts")
     public String contacts(HttpSession session, Model model) {
@@ -476,10 +402,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/contacts/resolve/{id}")
-    public String resolveContact(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String resolveContact(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -492,11 +415,9 @@ public class AdminController extends BaseController {
 
         return "redirect:/admin/contacts";
     }
+
     @GetMapping("/orders/confirm/{id}")
-    public String confirmOrder(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String confirmOrder(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -510,10 +431,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/orders/shipping/{id}")
-    public String shippingOrder(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String shippingOrder(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -527,10 +445,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/orders/delivered/{id}")
-    public String deliveredOrder(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String deliveredOrder(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -545,10 +460,7 @@ public class AdminController extends BaseController {
     }
 
     @GetMapping("/orders/cancel/{id}")
-    public String cancelOrder(
-            @PathVariable Integer id,
-            HttpSession session
-    ) {
+    public String cancelOrder(@PathVariable Integer id, HttpSession session) {
         if (!isAdmin(session)) {
             return "redirect:/login";
         }
@@ -571,8 +483,6 @@ public class AdminController extends BaseController {
 
         return "redirect:/admin/orders?cancelled";
     }
-
-    /* ========================= RETURN / EXCHANGE ========================= */
 
     @GetMapping("/returns")
     public String returns(HttpSession session, Model model) {
@@ -652,8 +562,16 @@ public class AdminController extends BaseController {
             this.orders = orders;
         }
 
-        public String getMonth() { return month; }
-        public BigDecimal getRevenue() { return revenue; }
-        public Long getOrders() { return orders; }
+        public String getMonth() {
+            return month;
+        }
+
+        public BigDecimal getRevenue() {
+            return revenue;
+        }
+
+        public Long getOrders() {
+            return orders;
+        }
     }
 }

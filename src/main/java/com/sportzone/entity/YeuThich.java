@@ -7,8 +7,7 @@ import java.time.LocalDateTime;
 @Table(name = "YeuThich")
 public class YeuThich {
 
-    @EmbeddedId
-    private YeuThichId id;
+    @EmbeddedId private YeuThichId id;
 
     @ManyToOne
     @MapsId("maND")

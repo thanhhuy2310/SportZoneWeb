@@ -22,8 +22,7 @@ public class AuthController extends BaseController {
             ThuongHieuRepository thuongHieuRepository,
             LoaiGiayRepository loaiGiayRepository,
             NguoiDungRepository nguoiDungRepository,
-            DonHangRepository donHangRepository
-    ) {
+            DonHangRepository donHangRepository) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
         this.nguoiDungRepository = nguoiDungRepository;
         this.donHangRepository = donHangRepository;
@@ -36,11 +35,7 @@ public class AuthController extends BaseController {
 
     @PostMapping("/login")
     public String login(
-            @RequestParam String email,
-            @RequestParam String matKhau,
-            HttpSession session,
-            Model model
-    ) {
+            @RequestParam String email, @RequestParam String matKhau, HttpSession session, Model model) {
         var user = nguoiDungRepository.findByEmailAndMatKhau(email, matKhau);
 
         if (user.isEmpty()) {
@@ -84,14 +79,12 @@ public class AuthController extends BaseController {
         return "redirect:/login?registered";
     }
 
-
     @PostMapping("/profile")
     public String updateProfile(
             @RequestParam String hoTen,
             @RequestParam String soDienThoai,
             @RequestParam String diaChi,
-            HttpSession session
-    ) {
+            HttpSession session) {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
 
         if (user == null) {
