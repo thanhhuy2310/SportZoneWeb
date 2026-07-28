@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs | SportZone Admin</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+<body class="adminx-body">
+<div class="adminx-shell">
+    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('audit-logs')}"></div>
+
+    <main class="adminx-main">
+        <div th:replace="~{admin/fragments/admin-header :: adminHeader('Audit Logs', 'Read-only system activity')}"></div>
+
+        <section class="adminx-panel">
+            <div class="adminx-panel-head">
+                <h2>Activity</h2>
+                <form method="get" th:action="@{/admin/audit-logs}" style="display: flex; gap: 8px;">
+                    <input type="search" name="action" th:value="${action}" placeholder="Filter action">
+                    <button class="adminx-btn" type="submit">Search</button>
+                </form>
+            </div>
+            <div class="adminx-table-wrap">
+                <table class="adminx-table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Entity</th>
+                        <th>Entity ID</th>
+                        <th>Old value</th>
+                        <th>New value</th>
+                        <th>IP</th>
+                        <th>Result</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="log : ${logs}">
+                        <td th:text="${#temporals.format(log.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+                        <td th:text="${log.user != null ? log.user.email : '-'}">-</td>
+                        <td th:text="${log.action}">Action</td>
+                        <td th:text="${log.entityName}">Entity</td>
+                        <td th:text="${log.entityId}">-</td>
+                        <td th:text="${log.oldValue}">-</td>
+                        <td th:text="${log.newValue}">-</td>
+                        <td th:text="${log.ipAddress}">-</td>
+                        <td th:text="${log.result}">SUCCESS</td>
+                    </tr>
+                    <tr th:if="${logs == null or logs.isEmpty()}">
+                        <td colspan="9"><div class="adminx-empty">No audit logs found.</div></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

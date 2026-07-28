@@ -7,6 +7,7 @@ import com.sportzone.entity.LoaiGiay;
 import com.sportzone.entity.NguoiDung;
 import com.sportzone.entity.SanPham;
 import com.sportzone.entity.ThuongHieu;
+import com.sportzone.repository.AuditLogRepository;
 import com.sportzone.repository.BienTheSanPhamRepository;
 import com.sportzone.repository.DoiTraHangRepository;
 import com.sportzone.repository.DonHangRepository;
@@ -14,8 +15,13 @@ import com.sportzone.repository.LienHeRepository;
 import com.sportzone.repository.LoaiGiayRepository;
 import com.sportzone.repository.NguoiDungRepository;
 import com.sportzone.repository.SanPhamRepository;
+import com.sportzone.repository.StockMovementRepository;
 import com.sportzone.repository.ThuongHieuRepository;
+import com.sportzone.service.AuditLogService;
 import com.sportzone.service.CartService;
+import com.sportzone.service.NotificationService;
+import com.sportzone.service.OrderStatusHistoryService;
+import com.sportzone.service.StockMovementService;
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,6 +44,12 @@ public class AdminController extends BaseController {
     private final DoiTraHangRepository doiTraHangRepository;
     private final BienTheSanPhamRepository bienTheSanPhamRepository;
     private final LienHeRepository lienHeRepository;
+    private final OrderStatusHistoryService orderStatusHistoryService;
+    private final StockMovementRepository stockMovementRepository;
+    private final AuditLogRepository auditLogRepository;
+    private final StockMovementService stockMovementService;
+    private final AuditLogService auditLogService;
+    private final NotificationService notificationService;
 
     public AdminController(
             CartService cartService,
@@ -48,7 +60,13 @@ public class AdminController extends BaseController {
             DonHangRepository donHangRepository,
             DoiTraHangRepository doiTraHangRepository,
             BienTheSanPhamRepository bienTheSanPhamRepository,
-            LienHeRepository lienHeRepository) {
+            LienHeRepository lienHeRepository,
+            OrderStatusHistoryService orderStatusHistoryService,
+            StockMovementRepository stockMovementRepository,
+            AuditLogRepository auditLogRepository,
+            StockMovementService stockMovementService,
+            AuditLogService auditLogService,
+            NotificationService notificationService) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
 
         this.sanPhamRepository = sanPhamRepository;
@@ -59,6 +77,12 @@ public class AdminController extends BaseController {
         this.doiTraHangRepository = doiTraHangRepository;
         this.bienTheSanPhamRepository = bienTheSanPhamRepository;
         this.lienHeRepository = lienHeRepository;
+        this.orderStatusHistoryService = orderStatusHistoryService;
+        this.stockMovementRepository = stockMovementRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.stockMovementService = stockMovementService;
+        this.auditLogService = auditLogService;
+        this.notificationService = notificationService;
     }
 
     private boolean isAdmin(HttpSession session) {
@@ -66,6 +90,15 @@ public class AdminController extends BaseController {
 
         return user != null
                 && ("ADMIN".equals(user.getVaiTro()) || "NHANVIEN".equals(user.getVaiTro()));
+    }
+
+    private boolean isSystemAdmin(HttpSession session) {
+        NguoiDung user = (NguoiDung) session.getAttribute("user");
+        return user != null && "ADMIN".equals(user.getVaiTro());
+    }
+
+    private NguoiDung currentUser(HttpSession session) {
+        return (NguoiDung) session.getAttribute("user");
     }
 
     @GetMapping
@@ -192,7 +225,17 @@ public class AdminController extends BaseController {
             product.setTrangThai("Active");
         }
 
-        sanPhamRepository.save(product);
+        boolean newProduct = product.getMaSP() == null;
+        SanPham savedProduct = sanPhamRepository.save(product);
+        auditLogService.record(
+                currentUser(session),
+                newProduct ? "CREATE_PRODUCT" : "UPDATE_PRODUCT",
+                "SanPham",
+                savedProduct.getMaSP(),
+                null,
+                savedProduct.getTenSP(),
+                null,
+                "SUCCESS");
 
         return "redirect:/admin/products";
     }
@@ -205,6 +248,8 @@ public class AdminController extends BaseController {
 
         try {
             sanPhamRepository.deleteById(id);
+            auditLogService.record(
+                    currentUser(session), "DELETE_PRODUCT", "SanPham", id, null, null, null, "SUCCESS");
         } catch (Exception e) {
             return "redirect:/admin/products?deleteError";
         }
@@ -318,7 +363,17 @@ public class AdminController extends BaseController {
             category.setTrangThai(true);
         }
 
-        loaiGiayRepository.save(category);
+        boolean newCategory = category.getMaLoai() == null;
+        LoaiGiay savedCategory = loaiGiayRepository.save(category);
+        auditLogService.record(
+                currentUser(session),
+                newCategory ? "CREATE_CATEGORY" : "UPDATE_CATEGORY",
+                "LoaiGiay",
+                savedCategory.getMaLoai(),
+                null,
+                savedCategory.getTenLoai(),
+                null,
+                "SUCCESS");
 
         return "redirect:/admin/categories";
     }
@@ -331,6 +386,8 @@ public class AdminController extends BaseController {
 
         try {
             loaiGiayRepository.deleteById(id);
+            auditLogService.record(
+                    currentUser(session), "DELETE_CATEGORY", "LoaiGiay", id, null, null, null, "SUCCESS");
         } catch (Exception e) {
             return "redirect:/admin/categories?deleteError";
         }
@@ -366,15 +423,13 @@ public class AdminController extends BaseController {
 
         var order = donHangRepository.findById(maDH).orElseThrow();
 
-        order.setTrangThaiDonHang(status);
-
         if (paymentStatus != null && !paymentStatus.isBlank()) {
             order.setTrangThaiThanhToan(paymentStatus);
         } else if ("Delivered".equals(status)) {
             order.setTrangThaiThanhToan("Paid");
         }
 
-        donHangRepository.save(order);
+        updateOrderStatus(order, status, "Order status updated by administrator.", session);
 
         return "redirect:/admin/orders";
     }
@@ -423,9 +478,7 @@ public class AdminController extends BaseController {
         }
 
         var order = donHangRepository.findById(id).orElseThrow();
-        order.setTrangThaiDonHang("Confirmed");
-
-        donHangRepository.save(order);
+        updateOrderStatus(order, "Confirmed", "Order confirmed by administrator.", session);
 
         return "redirect:/admin/orders?confirmed";
     }
@@ -437,9 +490,7 @@ public class AdminController extends BaseController {
         }
 
         var order = donHangRepository.findById(id).orElseThrow();
-        order.setTrangThaiDonHang("Shipping");
-
-        donHangRepository.save(order);
+        updateOrderStatus(order, "Shipping", "Order handed over for shipping.", session);
 
         return "redirect:/admin/orders?shipping";
     }
@@ -451,10 +502,9 @@ public class AdminController extends BaseController {
         }
 
         var order = donHangRepository.findById(id).orElseThrow();
-        order.setTrangThaiDonHang("Delivered");
         order.setTrangThaiThanhToan("Paid");
 
-        donHangRepository.save(order);
+        updateOrderStatus(order, "Delivered", "Order delivered.", session);
 
         return "redirect:/admin/orders?delivered";
     }
@@ -470,16 +520,14 @@ public class AdminController extends BaseController {
         if (!"Cancelled".equals(order.getTrangThaiDonHang())
                 && !"Delivered".equals(order.getTrangThaiDonHang())
                 && !"Return Approved".equals(order.getTrangThaiDonHang())) {
-            restoreStock(order);
+            restoreStock(order, "CANCEL", currentUser(session));
         }
-
-        order.setTrangThaiDonHang("Cancelled");
 
         if (!"Paid".equals(order.getTrangThaiThanhToan())) {
             order.setTrangThaiThanhToan("Failed");
         }
 
-        donHangRepository.save(order);
+        updateOrderStatus(order, "Cancelled", "Order cancelled by administrator.", session);
 
         return "redirect:/admin/orders?cancelled";
     }
@@ -502,20 +550,33 @@ public class AdminController extends BaseController {
 
         DoiTraHang request = doiTraHangRepository.findById(id).orElseThrow();
         DonHang order = request.getDonHang();
-
-        if (order != null && !"Returned".equals(order.getTrangThaiDonHang())) {
-            restoreStock(order);
-
-            order.setTrangThaiDonHang("Returned");
-            order.setTrangThaiThanhToan("Refunded");
-
-            donHangRepository.save(order);
-        }
+        boolean returnRequestChanged = !"Approved".equals(request.getTrangThai());
 
         request.setTrangThai("Approved");
         request.setNgayXuLy(LocalDateTime.now());
 
         doiTraHangRepository.save(request);
+
+        if (order != null && returnRequestChanged) {
+            orderStatusHistoryService.appendStatus(
+                    order, "Return Approved", "Return request approved by administrator.");
+        }
+
+        if (order != null && !"Returned".equals(order.getTrangThaiDonHang())) {
+            restoreStock(order, "RETURN", currentUser(session));
+
+            order.setTrangThaiThanhToan("Refunded");
+
+            DonHang savedOrder = updateOrderStatus(
+                    order, "Returned", "Order returned after return approval.", session);
+            orderStatusHistoryService.appendStatus(
+                    savedOrder, "Refunded", "Payment refunded after return approval.");
+            notificationService.notifyUser(
+                    savedOrder.getNguoiDung(),
+                    "Return approved",
+                    "Your return for order #" + savedOrder.getMaDH() + " has been approved.",
+                    "RETURN_APPROVED");
+        }
 
         return "redirect:/admin/returns?approved";
     }
@@ -527,14 +588,98 @@ public class AdminController extends BaseController {
         }
 
         DoiTraHang request = doiTraHangRepository.findById(id).orElseThrow();
+        boolean returnRequestChanged = !"Rejected".equals(request.getTrangThai());
         request.setTrangThai("Rejected");
         request.setNgayXuLy(LocalDateTime.now());
         doiTraHangRepository.save(request);
 
+        if (request.getDonHang() != null && returnRequestChanged) {
+            orderStatusHistoryService.appendStatus(
+                    request.getDonHang(), "Rejected", "Return request rejected by administrator.");
+            notificationService.notifyUser(
+                    request.getDonHang().getNguoiDung(),
+                    "Return rejected",
+                    "Your return request for order #" + request.getDonHang().getMaDH() + " was rejected.",
+                    "RETURN_REJECTED");
+        }
+
         return "redirect:/admin/returns?rejected";
     }
 
-    private void restoreStock(DonHang order) {
+    @GetMapping("/inventory")
+    public String inventory(HttpSession session, Model model) {
+        if (!isSystemAdmin(session)) {
+            return "redirect:/login";
+        }
+        model.addAttribute("variants", bienTheSanPhamRepository.findAll());
+        return "admin/inventory";
+    }
+
+    @PostMapping("/inventory/import")
+    public String importInventory(
+            @RequestParam Integer variantId,
+            @RequestParam int quantity,
+            @RequestParam(required = false) String note,
+            HttpSession session) {
+        if (!isSystemAdmin(session) || quantity <= 0) {
+            return "redirect:/admin/inventory?error";
+        }
+        stockMovementService.changeStock(
+                variantId,
+                quantity,
+                "IMPORT",
+                null,
+                "MANUAL",
+                currentUser(session),
+                note,
+                null);
+        return "redirect:/admin/inventory?imported";
+    }
+
+    @PostMapping("/inventory/adjust")
+    public String adjustInventory(
+            @RequestParam Integer variantId,
+            @RequestParam int quantity,
+            @RequestParam(required = false) String note,
+            HttpSession session) {
+        if (!isSystemAdmin(session) || quantity < 0) {
+            return "redirect:/admin/inventory?error";
+        }
+        stockMovementService.adjustStock(variantId, quantity, currentUser(session), note, null);
+        return "redirect:/admin/inventory?adjusted";
+    }
+
+    @GetMapping("/stock-movements")
+    public String stockMovements(HttpSession session, Model model) {
+        if (!isSystemAdmin(session)) {
+            return "redirect:/login";
+        }
+        model.addAttribute("movements", stockMovementRepository.findAllByOrderByCreatedAtDesc());
+        return "admin/stock-movements";
+    }
+
+    @GetMapping("/audit-logs")
+    public String auditLogs(
+            @RequestParam(required = false) String action, HttpSession session, Model model) {
+        if (!isSystemAdmin(session)) {
+            return "redirect:/login";
+        }
+        model.addAttribute(
+                "logs",
+                action == null || action.isBlank()
+                        ? auditLogRepository.findAllByOrderByCreatedAtDesc()
+                        : auditLogRepository.findByActionContainingIgnoreCaseOrderByCreatedAtDesc(action));
+        model.addAttribute("action", action);
+        return "admin/audit-logs";
+    }
+
+    private DonHang updateOrderStatus(
+            DonHang order, String status, String note, HttpSession session) {
+        return orderStatusHistoryService.updateOrderStatus(
+                order, status, note, currentUser(session), null);
+    }
+
+    private void restoreStock(DonHang order, String movementType, NguoiDung actor) {
         if (order.getChiTiet() == null) {
             return;
         }
@@ -544,10 +689,15 @@ public class AdminController extends BaseController {
                 continue;
             }
 
-            var bienThe = detail.getBienThe();
-            int currentStock = bienThe.getSoLuongTon() == null ? 0 : bienThe.getSoLuongTon();
-            bienThe.setSoLuongTon(currentStock + detail.getSoLuong());
-            bienTheSanPhamRepository.save(bienThe);
+            stockMovementService.changeStock(
+                    detail.getBienThe().getMaBT(),
+                    detail.getSoLuong(),
+                    movementType,
+                    order.getMaDH(),
+                    "DonHang",
+                    actor,
+                    "Stock restored for order status change.",
+                    null);
         }
     }
 

@@ -56,6 +56,9 @@ public class DonHang {
     @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL)
     private List<ChiTietDonHang> chiTiet = new ArrayList<>();
 
+    @OneToMany(mappedBy = "donHang")
+    private List<LichSuDonHang> lichSuDonHang = new ArrayList<>();
+
     @PrePersist
     public void pre() {
         if (ngayDat == null) ngayDat = LocalDateTime.now();
@@ -183,5 +186,13 @@ public class DonHang {
 
     public void setChiTiet(List<ChiTietDonHang> chiTiet) {
         this.chiTiet = chiTiet;
+    }
+
+    public List<LichSuDonHang> getLichSuDonHang() {
+        return lichSuDonHang;
+    }
+
+    public void setLichSuDonHang(List<LichSuDonHang> lichSuDonHang) {
+        this.lichSuDonHang = lichSuDonHang;
     }
 }

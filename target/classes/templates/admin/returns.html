@@ -2,21 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Returns | SportZone Admin</title>
     <link rel="stylesheet" th:href="@{/css/sportzone.css}">
 </head>
 <body class="adminx-body">
 <div class="adminx-shell">
-    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('returns')}"></div>
 
     <main class="adminx-main">
-        <div class="adminx-top">
-            <div>
-                <p class="adminx-kicker">ADMIN PANEL</p>
-                <h1>Returns</h1>
-                <span>Manage return and exchange requests</span>
-            </div>
-        </div>
+        <div th:replace="~{admin/fragments/admin-header :: adminHeader('Returns', 'Manage return and exchange requests')}"></div>
 
         <div class="alert-success" th:if="${param.approved}">Yêu cầu đổi trả đã được duyệt.</div>
         <div class="alert-error" th:if="${param.rejected}">Yêu cầu đổi trả đã bị từ chối.</div>

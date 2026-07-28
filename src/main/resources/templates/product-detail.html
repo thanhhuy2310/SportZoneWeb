@@ -114,17 +114,49 @@
     </div>
 </section>
 
-<section class="sz-section">
+<section class="sz-section" th:if="${isUser and frequentlyBoughtTogether != null and !frequentlyBoughtTogether.isEmpty()}">
     <div class="sz-container">
         <div class="sz-section-head">
             <div>
-                <div class="sz-kicker">YOU MAY ALSO LIKE</div>
-                <h2 class="sz-section-title">RELATED SNEAKERS</h2>
+                <div class="sz-kicker">FREQUENTLY BOUGHT TOGETHER</div>
+                <h2 class="sz-section-title">COMPLETE YOUR LOOK</h2>
             </div>
         </div>
 
         <div class="sz-product-grid">
-            <div th:each="sp, stat : ${related}" th:if="${stat.index < 4}">
+            <div th:each="sp, stat : ${frequentlyBoughtTogether}" th:if="${stat.index < 4}">
+                <div th:replace="~{fragments/product-card :: card(sp=${sp})}"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="sz-section" th:if="${isUser and recommendations != null and !recommendations.isEmpty()}">
+    <div class="sz-container">
+        <div class="sz-section-head">
+            <div>
+                <div class="sz-kicker">YOU MAY ALSO LIKE</div>
+                <h2 class="sz-section-title">RECOMMENDED SNEAKERS</h2>
+            </div>
+        </div>
+        <div class="sz-product-grid">
+            <div th:each="sp, stat : ${recommendations}" th:if="${stat.index < 4}">
+                <div th:replace="~{fragments/product-card :: card(sp=${sp})}"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="sz-section" th:if="${isUser and recentlyViewed != null and !recentlyViewed.isEmpty()}">
+    <div class="sz-container">
+        <div class="sz-section-head">
+            <div>
+                <div class="sz-kicker">RECENTLY VIEWED</div>
+                <h2 class="sz-section-title">CONTINUE EXPLORING</h2>
+            </div>
+        </div>
+        <div class="sz-product-grid">
+            <div th:each="sp, stat : ${recentlyViewed}" th:if="${stat.index < 4}">
                 <div th:replace="~{fragments/product-card :: card(sp=${sp})}"></div>
             </div>
         </div>

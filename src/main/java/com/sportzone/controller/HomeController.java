@@ -8,6 +8,9 @@ import com.sportzone.repository.SanPhamRepository;
 import com.sportzone.repository.SizeGiayRepository;
 import com.sportzone.repository.ThuongHieuRepository;
 import com.sportzone.service.CartService;
+import com.sportzone.service.ProductRecommendationService;
+import com.sportzone.service.RecentlyViewedProductService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,8 @@ public class HomeController extends BaseController {
     private final SizeGiayRepository sizeGiayRepository;
     private final BienTheSanPhamRepository bienTheSanPhamRepository;
     private final LienHeRepository lienHeRepository;
+    private final RecentlyViewedProductService recentlyViewedProductService;
+    private final ProductRecommendationService productRecommendationService;
 
     public HomeController(
             CartService cartService,
@@ -28,7 +33,9 @@ public class HomeController extends BaseController {
             SanPhamRepository sanPhamRepository,
             SizeGiayRepository sizeGiayRepository,
             BienTheSanPhamRepository bienTheSanPhamRepository,
-            LienHeRepository lienHeRepository) {
+            LienHeRepository lienHeRepository,
+            RecentlyViewedProductService recentlyViewedProductService,
+            ProductRecommendationService productRecommendationService) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
 
         this.sanPhamRepository = sanPhamRepository;
@@ -36,6 +43,8 @@ public class HomeController extends BaseController {
         this.sizeGiayRepository = sizeGiayRepository;
         this.bienTheSanPhamRepository = bienTheSanPhamRepository;
         this.lienHeRepository = lienHeRepository;
+        this.recentlyViewedProductService = recentlyViewedProductService;
+        this.productRecommendationService = productRecommendationService;
     }
 
     @ModelAttribute("menSizes")
@@ -78,13 +87,18 @@ public class HomeController extends BaseController {
     }
 
     @GetMapping("/products/{id}")
-    public String detail(@PathVariable Integer id, Model model) {
+    public String detail(@PathVariable Integer id, Model model, HttpSession session) {
         var product = sanPhamRepository.findById(id).orElse(null);
+        var user = (com.sportzone.entity.NguoiDung) session.getAttribute("user");
 
         model.addAttribute("product", product);
-        model.addAttribute("related", sanPhamRepository.findTop8ByOrderByLuotXemDesc());
 
         if (product != null) {
+            recentlyViewedProductService.recordView(user, product);
+            model.addAttribute("recentlyViewed", recentlyViewedProductService.getRecentlyViewed(user, id));
+            model.addAttribute("recommendations", productRecommendationService.getRecommendations(product, user));
+            model.addAttribute(
+                    "frequentlyBoughtTogether", productRecommendationService.getFrequentlyBoughtTogether(product));
             var variants = bienTheSanPhamRepository.findAvailableVariantsByProduct(id);
 
             model.addAttribute("variants", variants);

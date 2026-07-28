@@ -2,58 +2,51 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brand Form | SportZone Admin</title>
     <link rel="stylesheet" th:href="@{/css/sportzone.css}">
 </head>
 
 <body class="adminx-body">
     <div class="adminx-shell">
-        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('brands')}"></div>
 
         <main class="adminx-main">
-            <div class="adminx-top">
-                <div>
-                    <p class="adminx-kicker">ADMIN PANEL</p>
-                    <h1>Brand Form</h1>
-                    <span>Create or update brand</span>
-                </div>
-            </div>
+            <div th:replace="~{admin/fragments/admin-header :: adminHeader('Brand Form', 'Create or update brand')}"></div>
 
+            <section class="adminx-panel">
+                <form class="adminx-form" th:action="@{/admin/brands/save}" th:object="${brand}" method="post">
+                    <input type="hidden" th:field="*{maTH}">
 
-<section class="adminx-panel">
-    <form class="adminx-form" th:action="@{/admin/brands/save}" th:object="${brand}" method="post">
-        <input type="hidden" th:field="*{maTH}">
+                    <div class="adminx-field">
+                        <label>Brand Name</label>
+                        <input type="text" th:field="*{tenTH}" required>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Brand Name</label>
-            <input type="text" th:field="*{tenTH}" required>
-        </div>
+                    <div class="adminx-field">
+                        <label>Logo URL</label>
+                        <input type="text" th:field="*{logo}">
+                    </div>
 
-        <div class="adminx-field">
-            <label>Logo URL</label>
-            <input type="text" th:field="*{logo}">
-        </div>
+                    <div class="adminx-field">
+                        <label>Description</label>
+                        <textarea rows="5" th:field="*{moTa}"></textarea>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Description</label>
-            <textarea rows="5" th:field="*{moTa}"></textarea>
-        </div>
+                    <div class="adminx-field">
+                        <label>Status</label>
+                        <select th:field="*{trangThai}">
+                            <option th:value="true">Active</option>
+                            <option th:value="false">Hidden</option>
+                        </select>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Status</label>
-            <select th:field="*{trangThai}">
-                <option th:value="true">Active</option>
-                <option th:value="false">Hidden</option>
-            </select>
-        </div>
-
-        <div class="adminx-form-actions">
-            <button class="adminx-btn" type="submit">Save</button>
-            <a class="adminx-btn dark" th:href="@{/admin/brands}">Cancel</a>
-        </div>
-    </form>
-</section>
-
+                    <div class="adminx-form-actions">
+                        <button class="adminx-btn" type="submit">Save</button>
+                        <a class="adminx-btn dark" th:href="@{/admin/brands}">Cancel</a>
+                    </div>
+                </form>
+            </section>
         </main>
     </div>
 </body>

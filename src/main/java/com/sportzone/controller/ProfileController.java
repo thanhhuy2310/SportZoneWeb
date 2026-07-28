@@ -9,6 +9,8 @@ import com.sportzone.repository.LoaiGiayRepository;
 import com.sportzone.repository.NguoiDungRepository;
 import com.sportzone.repository.ThuongHieuRepository;
 import com.sportzone.service.CartService;
+import com.sportzone.service.AuditLogService;
+import com.sportzone.service.OrderStatusHistoryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,8 @@ public class ProfileController extends BaseController {
     private final DonHangRepository donHangRepository;
     private final DoiTraHangRepository doiTraHangRepository;
     private final NguoiDungRepository nguoiDungRepository;
+    private final OrderStatusHistoryService orderStatusHistoryService;
+    private final AuditLogService auditLogService;
 
     public ProfileController(
             CartService cartService,
@@ -27,11 +31,15 @@ public class ProfileController extends BaseController {
             LoaiGiayRepository loaiGiayRepository,
             DonHangRepository donHangRepository,
             DoiTraHangRepository doiTraHangRepository,
-            NguoiDungRepository nguoiDungRepository) {
+            NguoiDungRepository nguoiDungRepository,
+            OrderStatusHistoryService orderStatusHistoryService,
+            AuditLogService auditLogService) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
         this.donHangRepository = donHangRepository;
         this.doiTraHangRepository = doiTraHangRepository;
         this.nguoiDungRepository = nguoiDungRepository;
+        this.orderStatusHistoryService = orderStatusHistoryService;
+        this.auditLogService = auditLogService;
     }
 
     @GetMapping("/profile")
@@ -78,6 +86,15 @@ public class ProfileController extends BaseController {
         user.setDiaChi(diaChi);
 
         nguoiDungRepository.save(user);
+        auditLogService.record(
+                user,
+                "UPDATE_USER",
+                "NguoiDung",
+                user.getMaND(),
+                null,
+                user.getEmail(),
+                null,
+                "SUCCESS");
         session.setAttribute("user", user);
         return "redirect:/profile?updated";
     }
@@ -111,6 +128,7 @@ public class ProfileController extends BaseController {
 
         model.addAttribute("loginUser", user);
         model.addAttribute("order", order);
+        model.addAttribute("history", orderStatusHistoryService.getHistory(order.getMaDH()));
         return "invoice";
     }
 
@@ -135,12 +153,13 @@ public class ProfileController extends BaseController {
         DoiTraHang request = new DoiTraHang();
         request.setDonHang(order);
         request.setNguoiDung(user);
-        request.setLyDo(lyDo == null || lyDo.isBlank() ? "Customer return request" : lyDo);
+        String returnReason = lyDo == null || lyDo.isBlank() ? "Customer return request" : lyDo;
+        request.setLyDo(returnReason);
         request.setTrangThai("Requested");
         doiTraHangRepository.save(request);
 
-        order.setTrangThaiDonHang("Return Requested");
-        donHangRepository.save(order);
+        orderStatusHistoryService.updateOrderStatus(
+                order, "Return Requested", returnReason, user, null);
 
         return "redirect:/profile?returnRequested";
     }

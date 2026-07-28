@@ -86,19 +86,42 @@
                     </div>
                 </div>
 
-                <div style="text-align:right; display:grid; gap:12px; justify-items:end;">
-                    <strong th:text="${'$' + #numbers.formatDecimal(order.tongTien / 26000,1,'COMMA',2,'POINT')}">
-                        $0.00
-                    </strong>
+                <div class="sz-order-summary-actions">
+                    <div class="sz-order-total-box">
+                        <span class="sz-order-total-label">Total Amount</span>
+                        <strong class="sz-order-total-amount" th:text="${'$' + #numbers.formatDecimal(order.tongTien / 26000,1,'COMMA',2,'POINT')}">$0.00</strong>
+                    </div>
 
-                    <a class="sz-btn dark" th:href="@{/invoice/{id}(id=${order.maDH})}">Invoice</a>
+                    <div class="sz-order-actions-panel">
+                        <h4 class="sz-actions-header">Order Actions</h4>
 
-                    <form th:if="${order.trangThaiDonHang == 'Delivered'}"
-                          th:action="@{/returns/request/{id}(id=${order.maDH})}"
-                          method="post">
-                        <input class="sz-input" name="lyDo" placeholder="Return reason" style="width:200px; margin-bottom:8px;">
-                        <button class="sz-btn" type="submit">Request Return</button>
-                    </form>
+                        <a class="sz-invoice-btn-secondary" th:href="@{/invoice/{id}(id=${order.maDH})}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>Download Invoice</span>
+                        </a>
+
+                        <form th:if="${order.trangThaiDonHang == 'Delivered'}"
+                              th:action="@{/returns/request/{id}(id=${order.maDH})}"
+                              method="post"
+                              class="sz-return-request-form">
+                            <div class="sz-return-form-divider"></div>
+                            
+                            <label class="sz-return-label">Return Reason</label>
+                            <textarea class="sz-return-textarea" 
+                                      name="lyDo" 
+                                      rows="3"
+                                      placeholder="Please describe the reason for returning this product..."
+                                      required></textarea>
+                            
+                            <button class="sz-btn-primary-red" type="submit">
+                                Request Return
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 

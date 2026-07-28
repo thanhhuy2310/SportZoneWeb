@@ -2,22 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders | SportZone Admin</title>
     <link rel="stylesheet" th:href="@{/css/sportzone.css}">
 </head>
 
 <body class="adminx-body">
 <div class="adminx-shell">
-    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('orders')}"></div>
 
     <main class="adminx-main">
-        <div class="adminx-top">
-            <div>
-                <p class="adminx-kicker">ADMIN PANEL</p>
-                <h1>Orders</h1>
-                <span>Manage order status</span>
-            </div>
-        </div>
+        <div th:replace="~{admin/fragments/admin-header :: adminHeader('Orders', 'Manage customer order statuses')}"></div>
 
         <div class="alert-success" th:if="${param.confirmed}">Đơn hàng đã được xác nhận thành công.</div>
         <div class="alert-success" th:if="${param.shipping}">Đơn hàng đã chuyển sang trạng thái đang giao.</div>

@@ -2,58 +2,51 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Form | SportZone Admin</title>
     <link rel="stylesheet" th:href="@{/css/sportzone.css}">
 </head>
 
 <body class="adminx-body">
     <div class="adminx-shell">
-        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('categories')}"></div>
 
         <main class="adminx-main">
-            <div class="adminx-top">
-                <div>
-                    <p class="adminx-kicker">ADMIN PANEL</p>
-                    <h1>Category Form</h1>
-                    <span>Create or update category</span>
-                </div>
-            </div>
+            <div th:replace="~{admin/fragments/admin-header :: adminHeader('Category Form', 'Create or update category')}"></div>
 
+            <section class="adminx-panel">
+                <form class="adminx-form" th:action="@{/admin/categories/save}" th:object="${category}" method="post">
+                    <input type="hidden" th:field="*{maLoai}">
 
-<section class="adminx-panel">
-    <form class="adminx-form" th:action="@{/admin/categories/save}" th:object="${category}" method="post">
-        <input type="hidden" th:field="*{maLoai}">
+                    <div class="adminx-field">
+                        <label>Category Name</label>
+                        <input type="text" th:field="*{tenLoai}" required>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Category Name</label>
-            <input type="text" th:field="*{tenLoai}" required>
-        </div>
+                    <div class="adminx-field">
+                        <label>Icon</label>
+                        <input type="text" th:field="*{icon}">
+                    </div>
 
-        <div class="adminx-field">
-            <label>Icon</label>
-            <input type="text" th:field="*{icon}">
-        </div>
+                    <div class="adminx-field">
+                        <label>Description</label>
+                        <textarea rows="5" th:field="*{moTa}"></textarea>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Description</label>
-            <textarea rows="5" th:field="*{moTa}"></textarea>
-        </div>
+                    <div class="adminx-field">
+                        <label>Status</label>
+                        <select th:field="*{trangThai}">
+                            <option th:value="true">Active</option>
+                            <option th:value="false">Hidden</option>
+                        </select>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Status</label>
-            <select th:field="*{trangThai}">
-                <option th:value="true">Active</option>
-                <option th:value="false">Hidden</option>
-            </select>
-        </div>
-
-        <div class="adminx-form-actions">
-            <button class="adminx-btn" type="submit">Save</button>
-            <a class="adminx-btn dark" th:href="@{/admin/categories}">Cancel</a>
-        </div>
-    </form>
-</section>
-
+                    <div class="adminx-form-actions">
+                        <button class="adminx-btn" type="submit">Save</button>
+                        <a class="adminx-btn dark" th:href="@{/admin/categories}">Cancel</a>
+                    </div>
+                </form>
+            </section>
         </main>
     </div>
 </body>

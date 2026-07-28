@@ -157,7 +157,24 @@
                 </a>
 
                 <a class="sz-icon-link"
-                   th:href="${loginUser == null ? '/login' : '/profile'}"
+                   th:if="${loginUser != null}"
+                   th:href="@{/notifications}"
+                   aria-label="Notifications">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 9A6 6 0 0 0 6 9C6 16 3 16 3 18H21C21 16 18 16 18 9Z"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <path d="M10 21H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sz-badge"
+                          th:if="${unreadNotificationCount > 0}"
+                          th:text="${unreadNotificationCount}">0</span>
+                </a>
+
+                <a class="sz-icon-link"
+                   th:href="${loginUser == null ? '/login' : ((loginUser.vaiTro == 'ADMIN' or loginUser.vaiTro == 'NHANVIEN') ? '/admin' : '/profile')}"
                    aria-label="Account">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                         <path d="M20 21A8 8 0 0 0 4 21"

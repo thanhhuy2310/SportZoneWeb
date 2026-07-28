@@ -36,9 +36,7 @@ public class WishlistController extends BaseController {
         NguoiDung user = (NguoiDung) session.getAttribute("user");
 
         if (user == null) {
-            model.addAttribute("products", java.util.List.of());
-
-            return "wishlist";
+            return "redirect:/login";
         }
 
         model.addAttribute("products", yeuThichRepository.findSanPhamByMaND(user.getMaND()));

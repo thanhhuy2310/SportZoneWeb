@@ -9,6 +9,10 @@ import com.sportzone.repository.LoaiGiayRepository;
 import com.sportzone.repository.MaGiamGiaRepository;
 import com.sportzone.repository.ThuongHieuRepository;
 import com.sportzone.service.CartService;
+import com.sportzone.service.AuditLogService;
+import com.sportzone.service.NotificationService;
+import com.sportzone.service.OrderStatusHistoryService;
+import com.sportzone.service.StockMovementService;
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import org.springframework.stereotype.Controller;
@@ -25,6 +29,10 @@ public class CartController extends BaseController {
     private final DonHangRepository donHangRepository;
     private final BienTheSanPhamRepository bienTheSanPhamRepository;
     private final MaGiamGiaRepository maGiamGiaRepository;
+    private final OrderStatusHistoryService orderStatusHistoryService;
+    private final StockMovementService stockMovementService;
+    private final AuditLogService auditLogService;
+    private final NotificationService notificationService;
 
     public CartController(
             CartService cartService,
@@ -32,11 +40,19 @@ public class CartController extends BaseController {
             LoaiGiayRepository loaiGiayRepository,
             DonHangRepository donHangRepository,
             BienTheSanPhamRepository bienTheSanPhamRepository,
-            MaGiamGiaRepository maGiamGiaRepository) {
+            MaGiamGiaRepository maGiamGiaRepository,
+            OrderStatusHistoryService orderStatusHistoryService,
+            StockMovementService stockMovementService,
+            AuditLogService auditLogService,
+            NotificationService notificationService) {
         super(cartService, thuongHieuRepository, loaiGiayRepository);
         this.donHangRepository = donHangRepository;
         this.bienTheSanPhamRepository = bienTheSanPhamRepository;
         this.maGiamGiaRepository = maGiamGiaRepository;
+        this.orderStatusHistoryService = orderStatusHistoryService;
+        this.stockMovementService = stockMovementService;
+        this.auditLogService = auditLogService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/cart/add/{id}")
@@ -46,6 +62,9 @@ public class CartController extends BaseController {
             @RequestParam(defaultValue = "1") int quantity,
             @RequestHeader(value = "Referer", required = false) String referer,
             HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         try {
             cartService.add(session, maBT != null ? maBT : id, quantity);
             clearCoupon(session);
@@ -57,6 +76,9 @@ public class CartController extends BaseController {
 
     @GetMapping("/cart")
     public String cart(HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("items", cartService.items(session));
         model.addAttribute("total", cartService.total(session));
         return "cart";
@@ -65,6 +87,9 @@ public class CartController extends BaseController {
     @PostMapping("/cart/update")
     public String update(
             @RequestParam Integer maSP, @RequestParam int quantity, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         try {
             cartService.update(session, maSP, quantity);
             clearCoupon(session);
@@ -76,6 +101,9 @@ public class CartController extends BaseController {
 
     @GetMapping("/cart/remove/{id}")
     public String remove(@PathVariable Integer id, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         cartService.remove(session, id);
         clearCoupon(session);
         return "redirect:/cart";
@@ -83,6 +111,9 @@ public class CartController extends BaseController {
 
     @GetMapping("/checkout")
     public String checkout(HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         if (cartService.items(session).isEmpty()) {
             return "redirect:/cart";
         }
@@ -203,12 +234,32 @@ public class CartController extends BaseController {
                 detail.setDonGia(item.getSanPham().giaHienThi());
                 order.getChiTiet().add(detail);
 
-                int tonKho = bienThe.getSoLuongTon() == null ? 0 : bienThe.getSoLuongTon();
-                bienThe.setSoLuongTon(tonKho - item.getSoLuong());
-                bienTheSanPhamRepository.save(bienThe);
             }
 
-            donHangRepository.save(order);
+            DonHang savedOrder = donHangRepository.save(order);
+            for (var item : cartItems) {
+                stockMovementService.changeStock(
+                        item.getBienThe().getMaBT(),
+                        -item.getSoLuong(),
+                        "ORDER",
+                        savedOrder.getMaDH(),
+                        "DonHang",
+                        user,
+                        "Stock deducted for checkout.",
+                        null);
+            }
+            orderStatusHistoryService.appendStatus(savedOrder, "Pending", "Order created.");
+            auditLogService.record(
+                    user,
+                    "CREATE_ORDER",
+                    "DonHang",
+                    savedOrder.getMaDH(),
+                    null,
+                    "Pending",
+                    null,
+                    "SUCCESS");
+            notificationService.notifyRole(
+                    "ADMIN", "New order", "Order #" + savedOrder.getMaDH() + " has been created.", "NEW_ORDER");
             cartService.clear(session);
             clearCoupon(session);
 

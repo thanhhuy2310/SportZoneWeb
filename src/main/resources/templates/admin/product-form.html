@@ -2,98 +2,91 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Form | SportZone Admin</title>
     <link rel="stylesheet" th:href="@{/css/sportzone.css}">
 </head>
 
 <body class="adminx-body">
     <div class="adminx-shell">
-        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar}"></div>
+        <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('products')}"></div>
 
         <main class="adminx-main">
-            <div class="adminx-top">
-                <div>
-                    <p class="adminx-kicker">ADMIN PANEL</p>
-                    <h1>Product Form</h1>
-                    <span>Create or update product</span>
-                </div>
-            </div>
+            <div th:replace="~{admin/fragments/admin-header :: adminHeader('Product Form', 'Create or update product')}"></div>
 
+            <section class="adminx-panel">
+                <form class="adminx-form" th:action="@{/admin/products/save}" th:object="${product}" method="post">
+                    <input type="hidden" th:field="*{maSP}">
 
-<section class="adminx-panel">
-    <form class="adminx-form" th:action="@{/admin/products/save}" th:object="${product}" method="post">
-        <input type="hidden" th:field="*{maSP}">
+                    <div class="adminx-form-grid">
+                        <div class="adminx-field">
+                            <label>Product Name</label>
+                            <input type="text" th:field="*{tenSP}" required>
+                        </div>
 
-        <div class="adminx-form-grid">
-            <div class="adminx-field">
-                <label>Product Name</label>
-                <input type="text" th:field="*{tenSP}" required>
-            </div>
+                        <div class="adminx-field">
+                            <label>Brand</label>
+                            <select name="maTH" required>
+                                <option value="">Choose Brand</option>
+                                <option th:each="b : ${brands}"
+                                        th:value="${b.maTH}"
+                                        th:selected="${product.thuongHieu != null and product.thuongHieu.maTH == b.maTH}"
+                                        th:text="${b.tenTH}">
+                                    Nike
+                                </option>
+                            </select>
+                        </div>
 
-            <div class="adminx-field">
-                <label>Brand</label>
-                <select name="maTH" required>
-                    <option value="">Choose Brand</option>
-                    <option th:each="b : ${brands}"
-                            th:value="${b.maTH}"
-                            th:selected="${product.thuongHieu != null and product.thuongHieu.maTH == b.maTH}"
-                            th:text="${b.tenTH}">
-                        Nike
-                    </option>
-                </select>
-            </div>
+                        <div class="adminx-field">
+                            <label>Category</label>
+                            <select name="maLoai" required>
+                                <option value="">Choose Category</option>
+                                <option th:each="c : ${categories}"
+                                        th:value="${c.maLoai}"
+                                        th:selected="${product.loaiGiay != null and product.loaiGiay.maLoai == c.maLoai}"
+                                        th:text="${c.tenLoai}">
+                                    Running
+                                </option>
+                            </select>
+                        </div>
 
-            <div class="adminx-field">
-                <label>Category</label>
-                <select name="maLoai" required>
-                    <option value="">Choose Category</option>
-                    <option th:each="c : ${categories}"
-                            th:value="${c.maLoai}"
-                            th:selected="${product.loaiGiay != null and product.loaiGiay.maLoai == c.maLoai}"
-                            th:text="${c.tenLoai}">
-                        Running
-                    </option>
-                </select>
-            </div>
+                        <div class="adminx-field">
+                            <label>Price</label>
+                            <input type="number" step="1000" th:field="*{gia}" required>
+                        </div>
 
-            <div class="adminx-field">
-                <label>Price</label>
-                <input type="number" step="1000" th:field="*{gia}" required>
-            </div>
+                        <div class="adminx-field">
+                            <label>Sale Price</label>
+                            <input type="number" step="1000" th:field="*{giaKhuyenMai}">
+                        </div>
 
-            <div class="adminx-field">
-                <label>Sale Price</label>
-                <input type="number" step="1000" th:field="*{giaKhuyenMai}">
-            </div>
+                        <div class="adminx-field">
+                            <label>Status</label>
+                            <select th:field="*{trangThai}">
+                                <option value="Active">Active</option>
+                                <option value="Out of stock">Out of stock</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Hidden">Hidden</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <div class="adminx-field">
-                <label>Status</label>
-                <select th:field="*{trangThai}">
-                    <option value="Active">Active</option>
-                    <option value="Out of stock">Out of stock</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Hidden">Hidden</option>
-                </select>
-            </div>
-        </div>
+                    <div class="adminx-field">
+                        <label>Image URL</label>
+                        <input type="text" th:field="*{anhDaiDien}">
+                    </div>
 
-        <div class="adminx-field">
-            <label>Image URL</label>
-            <input type="text" th:field="*{anhDaiDien}">
-        </div>
+                    <div class="adminx-field">
+                        <label>Description</label>
+                        <textarea rows="5" th:field="*{moTa}"></textarea>
+                    </div>
 
-        <div class="adminx-field">
-            <label>Description</label>
-            <textarea rows="5" th:field="*{moTa}"></textarea>
-        </div>
-
-        <div class="adminx-form-actions">
-            <button class="adminx-btn" type="submit">Save</button>
-            <a class="adminx-btn dark" th:href="@{/admin/products}">Cancel</a>
-        </div>
-    </form>
-</section>
-
+                    <div class="adminx-form-actions">
+                        <button class="adminx-btn" type="submit">Save</button>
+                        <a class="adminx-btn dark" th:href="@{/admin/products}">Cancel</a>
+                    </div>
+                </form>
+            </section>
         </main>
     </div>
 </body>

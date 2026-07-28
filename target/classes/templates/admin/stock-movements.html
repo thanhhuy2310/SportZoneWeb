@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Movements | SportZone Admin</title>
+    <link rel="stylesheet" th:href="@{/css/sportzone.css}">
+</head>
+<body class="adminx-body">
+<div class="adminx-shell">
+    <div th:replace="~{admin/fragments/admin-sidebar :: adminSidebar('stock-movements')}"></div>
+
+    <main class="adminx-main">
+        <div th:replace="~{admin/fragments/admin-header :: adminHeader('Stock Movements', 'Read-only inventory history')}"></div>
+
+        <section class="adminx-panel">
+            <div class="adminx-table-wrap">
+                <table class="adminx-table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Variant</th>
+                        <th>Product</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Before</th>
+                        <th>After</th>
+                        <th>Reference</th>
+                        <th>By</th>
+                        <th>Note</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="movement : ${movements}">
+                        <td th:text="${#temporals.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}">Date</td>
+                        <td th:text="${movement.productVariant.maBT}">1</td>
+                        <td th:text="${movement.productVariant.sanPham != null ? movement.productVariant.sanPham.tenSP : '-'}">Product</td>
+                        <td th:text="${movement.movementType}">ORDER</td>
+                        <td th:text="${movement.quantity}">1</td>
+                        <td th:text="${movement.beforeQuantity}">0</td>
+                        <td th:text="${movement.afterQuantity}">0</td>
+                        <td th:text="${movement.referenceType != null ? movement.referenceType + ' #' + movement.referenceId : '-'}">-</td>
+                        <td th:text="${movement.createdBy != null ? movement.createdBy.hoTen : '-'}">-</td>
+                        <td th:text="${movement.note}">-</td>
+                    </tr>
+                    <tr th:if="${movements == null or movements.isEmpty()}">
+                        <td colspan="10"><div class="adminx-empty">No stock movements found.</div></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

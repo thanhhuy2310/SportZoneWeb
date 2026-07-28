@@ -2,6 +2,7 @@ package com.sportzone.repository;
 
 import com.sportzone.entity.SanPham;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,6 +36,12 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<SanPham> findTop8ByOrderByLuotXemDesc();
 
     List<SanPham> findTop8ByOrderByNgayTaoDesc();
+
+    List<SanPham> findByLoaiGiay_MaLoaiOrderByLuotXemDesc(Integer maLoai, Pageable pageable);
+
+    List<SanPham> findByThuongHieu_MaTHOrderByLuotXemDesc(Integer maTH, Pageable pageable);
+
+    List<SanPham> findAllByOrderByLuotXemDesc(Pageable pageable);
 
     @Query(
             """
